@@ -38,7 +38,7 @@ void HAPI_Main()
 		int starSize;
 	};	
 	//-------------------------------
-	const int kNumStars(50000);
+	const int kNumStars(5000);
 	int screenWidth(1024);
 	int screenHeight(768);
 	int eyeDistance(100);
