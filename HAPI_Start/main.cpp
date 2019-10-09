@@ -1,3 +1,8 @@
+#if defined(DEBUG) | defined(_DEBUG)
+	#include <crtdbg.h>
+	#define new new(_NORMAL_BLOCK,__FILE__,__LINE__)
+#endif
+
 /*
 	HAPI Start
 	----------
@@ -26,6 +31,7 @@ using namespace HAPISPACE;
 // When this function exits the program will close down
 //-----------------------------------------------------
 void ClearToColour(BYTE* screen, const int& screenWidth, const int& screenHeight, const HAPI_TColour& argColour);
+void Blit(BYTE* screen, const int& screenWidth, BYTE* texture, int textureWidth, int textureHeight, int posX, int posY);
 //-----------------------------------------------------
 
 void HAPI_Main()
@@ -45,6 +51,9 @@ void HAPI_Main()
 	int CentreX(1024 / 2);
 	int CentreY(768 / 2);
 	HAPI_TColour starColour;
+
+	int textureWidth, textureHeight;
+	BYTE* texture{ nullptr };
 	//-------------------------------
 
 	//Initialise the stars
@@ -58,6 +67,8 @@ void HAPI_Main()
 	}
 	if (!HAPI.Initialise(screenWidth, screenHeight, "Games Engine Construction ICA - V8008106"))
 		return;
+	if (!HAPI.LoadTexture("Data\\playerSprite.tga", &texture, textureWidth, textureHeight))
+		HAPI.UserMessage("Texture didn't load correctly", "Warning");
 
 	BYTE* screen = HAPI.GetScreenPointer();
 	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
@@ -136,6 +147,8 @@ void HAPI_Main()
 				starCoor[i].z = 500;
 			}				
 		}
+		//Render the plane
+		Blit(screen, screenWidth, texture, textureWidth, textureHeight, 100, 100);
 		//Display controls
 		HAPI.RenderText(10, 20, HAPI_TColour::YELLOW, "Change the eye distance - ARROWS (UP, DOWN)", 14, HAPI_TextStyle::eRegular);
 		HAPI.RenderText(10, 40, HAPI_TColour::YELLOW, "Move the point where stars spawn - WASD", 14, HAPI_TextStyle::eRegular);
@@ -151,6 +164,7 @@ void HAPI_Main()
 		if (keyboardData.scanCode['S']) { CentreY += 1; }
 		if (keyboardData.scanCode['D']) { CentreX += 1; }
 	}
+	delete[] texture;
 }
 
 void ClearToColour(BYTE* screen, const int& screenWidth, const int& screenHeight, const HAPI_TColour& argColour)
@@ -160,6 +174,47 @@ void ClearToColour(BYTE* screen, const int& screenWidth, const int& screenHeight
 	{
 		memcpy(temp, &argColour, 4);
 		temp += 4;
+	}
+}
+
+void Blit(BYTE* screen, const int& screenWidth, BYTE* texture, int textureWidth, int textureHeight, int posX, int posY)
+{
+	//get the top left position of the screen
+	BYTE* screenPnter = screen + (posX + posY * screenWidth) * 4;
+	//Temporary pointer for the texture data
+	BYTE* texturePnter = texture;
+
+	for (int y = 0; y < textureHeight; y++)
+	{
+		for (int x = 0; x < textureWidth; x++)
+		{
+			//memcpy(screenPnter, texturePnter, 4);
+			//HAPI_TColour* sourceColour = static_cast<HAPI_TColour*>(texturePnter);	//INVALID TYPE CONVERSION
+			HAPI_TColour* sourceColour = (HAPI_TColour*)texturePnter;
+			//HAPI_TColour* destColour = static_cast<HAPI_TColour*>(screenPnter);
+			HAPI_TColour* destColour = (HAPI_TColour*)screenPnter;
+
+			BYTE blue = texturePnter[0];
+			BYTE green = texturePnter[1];
+			BYTE red = texturePnter[2];
+			BYTE alpha = texturePnter[3];
+
+			float alpha = sourceColour->alpha / 255.0f;
+
+			screenPnter[0] = screenPnter[0] + ((alpha * (blue - screenPnter[0])) >> 8);
+			screenPnter[1] = screenPnter[1] + ((alpha * (green - screenPnter[1])) >> 8);
+			screenPnter
+
+			destColour->red = alpha * sourceColour->red + (1.0f - alpha) * destColour->red;
+			destColour->green = alpha * sourceColour->green + (1.0f - alpha) * destColour->green;
+			destColour->blue = alpha * sourceColour->blue + (1.0f - alpha) * destColour->blue;
+
+			//Move texture pointer to next line
+			texturePnter += 4;
+			//Move screen pointer to the next line
+			screenPnter += 4;
+		}
+		screenPnter += (screenWidth - textureWidth) * 4;
 	}
 }
 
