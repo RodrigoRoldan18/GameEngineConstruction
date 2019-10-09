@@ -54,6 +54,7 @@ void HAPI_Main()
 
 	int textureWidth, textureHeight;
 	BYTE* texture{ nullptr };
+	int texPosX{ 100 }, texPosY{ 100 };
 	//-------------------------------
 
 	//Initialise the stars
@@ -72,6 +73,7 @@ void HAPI_Main()
 
 	BYTE* screen = HAPI.GetScreenPointer();
 	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
+	const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
 	HAPI.SetShowFPS(true);
 
 	while (HAPI.Update())
@@ -147,22 +149,33 @@ void HAPI_Main()
 				starCoor[i].z = 500;
 			}				
 		}
-		//Render the plane
-		Blit(screen, screenWidth, texture, textureWidth, textureHeight, 100, 100);
+		//Control the spaceship
+		if (controllerData.isAttached)
+		{
+			if (controllerData.digitalButtons[HK_DIGITAL_DPAD_RIGHT]) { texPosX++; }
+			if (controllerData.digitalButtons[HK_DIGITAL_DPAD_LEFT]) { texPosX--; }
+		}
+		if (keyboardData.scanCode['L']) { texPosX++; }
+		if (keyboardData.scanCode['J']) { texPosX--; }
+		if (keyboardData.scanCode['I']) { texPosY--; }
+		if (keyboardData.scanCode['K']) { texPosY++; }
+		//Render the spaceship
+		Blit(screen, screenWidth, texture, textureWidth, textureHeight, texPosX, texPosY);
 		//Display controls
 		HAPI.RenderText(10, 20, HAPI_TColour::YELLOW, "Change the eye distance - ARROWS (UP, DOWN)", 14, HAPI_TextStyle::eRegular);
 		HAPI.RenderText(10, 40, HAPI_TColour::YELLOW, "Move the point where stars spawn - WASD", 14, HAPI_TextStyle::eRegular);
+		HAPI.RenderText(10, 60, HAPI_TColour::YELLOW, "Control the spaceship - IJKL", 14, HAPI_TextStyle::eRegular);
 
 		//Control the stars
-		if (keyboardData.scanCode[HK_UP]) { eyeDistance += 1; }
+		if (keyboardData.scanCode[HK_UP]) { eyeDistance++; }
 		if (eyeDistance > 10)
 		{
-			if (keyboardData.scanCode[HK_DOWN]) { eyeDistance -= 1; }
+			if (keyboardData.scanCode[HK_DOWN]) { eyeDistance--; }
 		}
-		if (keyboardData.scanCode['W']) { CentreY -= 1; }
-		if (keyboardData.scanCode['A']) { CentreX -= 1; }
-		if (keyboardData.scanCode['S']) { CentreY += 1; }
-		if (keyboardData.scanCode['D']) { CentreX += 1; }
+		if (keyboardData.scanCode['W']) { CentreY--; }
+		if (keyboardData.scanCode['A']) { CentreX--; }
+		if (keyboardData.scanCode['S']) { CentreY++; }
+		if (keyboardData.scanCode['D']) { CentreX++; }
 	}
 	delete[] texture;
 }
@@ -197,17 +210,17 @@ void Blit(BYTE* screen, const int& screenWidth, BYTE* texture, int textureWidth,
 			BYTE blue = texturePnter[0];
 			BYTE green = texturePnter[1];
 			BYTE red = texturePnter[2];
-			BYTE alpha = texturePnter[3];
-
-			float alpha = sourceColour->alpha / 255.0f;
+			BYTE alpha = texturePnter[3];			
 
 			screenPnter[0] = screenPnter[0] + ((alpha * (blue - screenPnter[0])) >> 8);
 			screenPnter[1] = screenPnter[1] + ((alpha * (green - screenPnter[1])) >> 8);
-			screenPnter
+			screenPnter[2] = screenPnter[2] + ((alpha * (red - screenPnter[2])) >> 8);
 
-			destColour->red = alpha * sourceColour->red + (1.0f - alpha) * destColour->red;
-			destColour->green = alpha * sourceColour->green + (1.0f - alpha) * destColour->green;
-			destColour->blue = alpha * sourceColour->blue + (1.0f - alpha) * destColour->blue;
+			//	NOT SO EFFICIENT VERSION?
+			//float alpha = sourceColour->alpha / 255.0f;
+			//destColour->red = alpha * sourceColour->red + (1.0f - alpha) * destColour->red;
+			//destColour->green = alpha * sourceColour->green + (1.0f - alpha) * destColour->green;
+			//destColour->blue = alpha * sourceColour->blue + (1.0f - alpha) * destColour->blue;
 
 			//Move texture pointer to next line
 			texturePnter += 4;
