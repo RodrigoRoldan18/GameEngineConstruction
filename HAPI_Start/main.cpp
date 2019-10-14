@@ -30,10 +30,6 @@ using namespace HAPISPACE;
 
 // Every HAPI program has a HAPI_Main as an entry point
 // When this function exits the program will close down
-//-----------------------------------------------------
-//void ClearToColour(BYTE* screen, const int& screenWidth, const int& screenHeight, const HAPI_TColour& argColour);
-void Blit(BYTE* screen, const int& screenWidth, BYTE* texture, int textureWidth, int textureHeight, int posX, int posY);
-//-----------------------------------------------------
 
 void HAPI_Main()
 {
@@ -45,15 +41,11 @@ void HAPI_Main()
 		int starSize;
 	};	
 	//-------------------------------
-	const int kNumStars(5000);	
+	const int kNumStars(1000);	
 	int eyeDistance(100);
 	int CentreX(1024 / 2);
 	int CentreY(768 / 2);
 	HAPI_TColour starColour;
-
-	int textureWidth, textureHeight;
-	BYTE* texture{ nullptr };
-	int texPosX{ 100 }, texPosY{ 100 };
 
 	Visualisation* m_visualisation{ new Visualisation };
 
@@ -70,11 +62,7 @@ void HAPI_Main()
 		starCoor[i].y = rand() % m_visualisation->GetHeight();
 		starCoor[i].z = rand() % 500;
 		starCoor[i].starSize = rand() % 5;
-	}
-	
-	//Load the textures(sprites)
-	if (!HAPI.LoadTexture("Data\\playerSprite.tga", &texture, textureWidth, textureHeight))
-		HAPI.UserMessage("Texture didn't load correctly", "Warning");
+	}	
 
 	while (HAPI.Update())
 	{
@@ -155,10 +143,10 @@ void HAPI_Main()
 			if (controllerData.digitalButtons[HK_DIGITAL_DPAD_RIGHT]) { texPosX++; }
 			if (controllerData.digitalButtons[HK_DIGITAL_DPAD_LEFT]) { texPosX--; }
 		}
-		if (keyboardData.scanCode['L']) { texPosX++; } //add the area of the texture
-		if (keyboardData.scanCode['J']) { texPosX--; }
-		if (keyboardData.scanCode['I']) { texPosY--; }
-		if (keyboardData.scanCode['K']) { texPosY++; }
+		if (keyboardData.scanCode['L'] && texPosX < m_visualisation->GetWidth() - textureWidth) { texPosX++; }
+		if (keyboardData.scanCode['J'] && texPosX > 0) { texPosX--; }
+		if (keyboardData.scanCode['I'] && texPosY > 0) { texPosY--; }
+		if (keyboardData.scanCode['K'] && texPosY < m_visualisation->GetHeight() - textureHeight) { texPosY++; }
 		//Render the spaceship
 		Blit(m_visualisation->GetScreenPnter(), m_visualisation->GetWidth(), texture, textureWidth, textureHeight, texPosX, texPosY);
 		//Display controls
@@ -180,33 +168,8 @@ void HAPI_Main()
 	delete[] texture;
 }
 
-void Blit(BYTE* screen, const int& screenWidth, BYTE* texture, int textureWidth, int textureHeight, int posX, int posY)
-{
-	//get the top left position of the screen
-	BYTE* screenPnter = screen + (posX + posY * screenWidth) * 4;
-	//Temporary pointer for the texture data
-	BYTE* texturePnter = texture;
-
-	//HANDLE SPECIAL CASES. ALPHA = 0 & 255
-	for (int y = 0; y < textureHeight; y++)
-	{
-		for (int x = 0; x < textureWidth; x++)
-		{
-			BYTE blue = texturePnter[0];
-			BYTE green = texturePnter[1];
-			BYTE red = texturePnter[2];
-			BYTE alpha = texturePnter[3];			
-
-			screenPnter[0] = screenPnter[0] + ((alpha * (blue - screenPnter[0])) >> 8);
-			screenPnter[1] = screenPnter[1] + ((alpha * (green - screenPnter[1])) >> 8);
-			screenPnter[2] = screenPnter[2] + ((alpha * (red - screenPnter[2])) >> 8);
-
-			//Move texture pointer to next line
-			texturePnter += 4;
-			//Move screen pointer to the next line
-			screenPnter += 4;
-		}
-		screenPnter += (screenWidth - textureWidth) * 4;
-	}
-}
-
+/*
+CAN REMOVE STARS NOW
+STORE SPRITES IN VISUALISATION
+CAN CONTROL THE SPACESHIP IN THE VISUALISATION CLASS
+*/

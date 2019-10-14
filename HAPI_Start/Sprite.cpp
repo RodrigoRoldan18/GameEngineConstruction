@@ -1,5 +1,18 @@
 #include "Sprite.h"
 
+Sprite::Sprite(const std::string& filename)
+{
+	if (!HAPI.LoadTexture(filename, &texture, spriteSize.widthX, spriteSize.heightY))
+		HAPI.UserMessage("Texture didn't load correctly", "Warning");
+	texturePos.widthX = 100;
+	texturePos.heightY = 100;
+}
+
+Sprite::~Sprite()
+{
+	delete[] this;
+}
+
 void Sprite::Blit(BYTE* screen, const int& screenWidth, BYTE* texture, int textureWidth, int textureHeight, int posX, int posY)
 {
 	//get the top left position of the screen
