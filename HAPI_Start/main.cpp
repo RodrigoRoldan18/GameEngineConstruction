@@ -23,6 +23,7 @@
 
 // Include the HAPI header to get access to all of HAPIs interfaces
 #include <HAPI_lib.h>
+#include "Visualisation.h"
 
 // HAPI itself is wrapped in the HAPISPACE namespace
 using namespace HAPISPACE;
@@ -30,7 +31,7 @@ using namespace HAPISPACE;
 // Every HAPI program has a HAPI_Main as an entry point
 // When this function exits the program will close down
 //-----------------------------------------------------
-void ClearToColour(BYTE* screen, const int& screenWidth, const int& screenHeight, const HAPI_TColour& argColour);
+//void ClearToColour(BYTE* screen, const int& screenWidth, const int& screenHeight, const HAPI_TColour& argColour);
 void Blit(BYTE* screen, const int& screenWidth, BYTE* texture, int textureWidth, int textureHeight, int posX, int posY);
 //-----------------------------------------------------
 
@@ -44,9 +45,7 @@ void HAPI_Main()
 		int starSize;
 	};	
 	//-------------------------------
-	const int kNumStars(5000);
-	int screenWidth(1024);
-	int screenHeight(768);
+	const int kNumStars(5000);	
 	int eyeDistance(100);
 	int CentreX(1024 / 2);
 	int CentreY(768 / 2);
@@ -55,30 +54,31 @@ void HAPI_Main()
 	int textureWidth, textureHeight;
 	BYTE* texture{ nullptr };
 	int texPosX{ 100 }, texPosY{ 100 };
+
+	Visualisation* m_visualisation{ new Visualisation };
+
+	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
+	const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
+	HAPI.SetShowFPS(true);
 	//-------------------------------
 
 	//Initialise the stars
 	Scoordinates3D starCoor[kNumStars];
 	for (int i = 0; i < kNumStars; i++)
 	{
-		starCoor[i].x = rand() % screenWidth;
-		starCoor[i].y = rand() % screenHeight;
+		starCoor[i].x = rand() % m_visualisation->GetWidth();
+		starCoor[i].y = rand() % m_visualisation->GetHeight();
 		starCoor[i].z = rand() % 500;
 		starCoor[i].starSize = rand() % 5;
 	}
-	if (!HAPI.Initialise(screenWidth, screenHeight, "Games Engine Construction ICA - V8008106"))
-		return;
+	
+	//Load the textures(sprites)
 	if (!HAPI.LoadTexture("Data\\playerSprite.tga", &texture, textureWidth, textureHeight))
 		HAPI.UserMessage("Texture didn't load correctly", "Warning");
 
-	BYTE* screen = HAPI.GetScreenPointer();
-	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
-	const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
-	HAPI.SetShowFPS(true);
-
 	while (HAPI.Update())
 	{
-		ClearToColour(screen, screenWidth, screenHeight, HAPI_TColour::BLACK);
+		m_visualisation->ClearToColour(HAPI_TColour::BLACK);
 		for (int i = 0; i < kNumStars; i++)
 		{
 			//Project the stars from 3D space into 2D space
@@ -86,7 +86,7 @@ void HAPI_Main()
 			float Sy = ((eyeDistance * (starCoor[i].y - (CentreY))) / (starCoor[i].z + eyeDistance)) + (CentreY);
 
 			//Render the stars
-			if ((Sx < screenWidth && Sx > 0) && (Sy < screenHeight && Sy > 0)) 
+			if ((Sx < m_visualisation->GetWidth() && Sx > 0) && (Sy < m_visualisation->GetHeight() && Sy > 0)) 
 			{ 
 				//Change the colour and the size depending on the z position
 				if (starCoor[i].z < 500.0f)
@@ -121,9 +121,9 @@ void HAPI_Main()
 					{
 						for (int starHeight = 0; starHeight < starCoor[i].starSize; starHeight++)
 						{
-							int offset = ((Sy + starHeight) * screenWidth + (Sx + starWidth)) * 4;
-							BYTE* pnter = screen + offset;
-							if ((Sx + starWidth < screenWidth && Sx > 0) && (Sy + starHeight < screenHeight && Sy > 0))
+							int offset = ((Sy + starHeight) * m_visualisation->GetWidth() + (Sx + starWidth)) * 4;
+							BYTE* pnter = m_visualisation->GetScreenPnter() + offset;
+							if ((Sx + starWidth < m_visualisation->GetWidth() && Sx > 0) && (Sy + starHeight < m_visualisation->GetHeight() && Sy > 0))
 							{
 								//Render the star
 								memcpy(pnter, &starColour, 4);
@@ -134,8 +134,8 @@ void HAPI_Main()
 				else			
 				{
 					//Render the star
-					int offset = (Sy * screenWidth + Sx) * 4;
-					BYTE* pnter = screen + offset;
+					int offset = (Sy * m_visualisation->GetWidth() + Sx) * 4;
+					BYTE* pnter = m_visualisation->GetScreenPnter() + offset;
 					memcpy(pnter, &starColour, 4);
 				}
 			}
@@ -144,8 +144,8 @@ void HAPI_Main()
 			starCoor[i].z -= 0.1f;
 			if (starCoor[i].z <= 0)
 			{
-				starCoor[i].x = rand() % screenWidth;
-				starCoor[i].y = rand() % screenHeight;
+				starCoor[i].x = rand() % m_visualisation->GetWidth();
+				starCoor[i].y = rand() % m_visualisation->GetHeight();
 				starCoor[i].z = 500;
 			}				
 		}
@@ -155,12 +155,12 @@ void HAPI_Main()
 			if (controllerData.digitalButtons[HK_DIGITAL_DPAD_RIGHT]) { texPosX++; }
 			if (controllerData.digitalButtons[HK_DIGITAL_DPAD_LEFT]) { texPosX--; }
 		}
-		if (keyboardData.scanCode['L']) { texPosX++; }
+		if (keyboardData.scanCode['L']) { texPosX++; } //add the area of the texture
 		if (keyboardData.scanCode['J']) { texPosX--; }
 		if (keyboardData.scanCode['I']) { texPosY--; }
 		if (keyboardData.scanCode['K']) { texPosY++; }
 		//Render the spaceship
-		Blit(screen, screenWidth, texture, textureWidth, textureHeight, texPosX, texPosY);
+		Blit(m_visualisation->GetScreenPnter(), m_visualisation->GetWidth(), texture, textureWidth, textureHeight, texPosX, texPosY);
 		//Display controls
 		HAPI.RenderText(10, 20, HAPI_TColour::YELLOW, "Change the eye distance - ARROWS (UP, DOWN)", 14, HAPI_TextStyle::eRegular);
 		HAPI.RenderText(10, 40, HAPI_TColour::YELLOW, "Move the point where stars spawn - WASD", 14, HAPI_TextStyle::eRegular);
@@ -180,16 +180,6 @@ void HAPI_Main()
 	delete[] texture;
 }
 
-void ClearToColour(BYTE* screen, const int& screenWidth, const int& screenHeight, const HAPI_TColour& argColour)
-{
-	BYTE* temp = screen;
-	for (int i = 0; i < screenWidth * screenHeight; i++)
-	{
-		memcpy(temp, &argColour, 4);
-		temp += 4;
-	}
-}
-
 void Blit(BYTE* screen, const int& screenWidth, BYTE* texture, int textureWidth, int textureHeight, int posX, int posY)
 {
 	//get the top left position of the screen
@@ -197,16 +187,11 @@ void Blit(BYTE* screen, const int& screenWidth, BYTE* texture, int textureWidth,
 	//Temporary pointer for the texture data
 	BYTE* texturePnter = texture;
 
+	//HANDLE SPECIAL CASES. ALPHA = 0 & 255
 	for (int y = 0; y < textureHeight; y++)
 	{
 		for (int x = 0; x < textureWidth; x++)
 		{
-			//memcpy(screenPnter, texturePnter, 4);
-			//HAPI_TColour* sourceColour = static_cast<HAPI_TColour*>(texturePnter);	//INVALID TYPE CONVERSION
-			HAPI_TColour* sourceColour = (HAPI_TColour*)texturePnter;
-			//HAPI_TColour* destColour = static_cast<HAPI_TColour*>(screenPnter);
-			HAPI_TColour* destColour = (HAPI_TColour*)screenPnter;
-
 			BYTE blue = texturePnter[0];
 			BYTE green = texturePnter[1];
 			BYTE red = texturePnter[2];
@@ -215,12 +200,6 @@ void Blit(BYTE* screen, const int& screenWidth, BYTE* texture, int textureWidth,
 			screenPnter[0] = screenPnter[0] + ((alpha * (blue - screenPnter[0])) >> 8);
 			screenPnter[1] = screenPnter[1] + ((alpha * (green - screenPnter[1])) >> 8);
 			screenPnter[2] = screenPnter[2] + ((alpha * (red - screenPnter[2])) >> 8);
-
-			//	NOT SO EFFICIENT VERSION?
-			//float alpha = sourceColour->alpha / 255.0f;
-			//destColour->red = alpha * sourceColour->red + (1.0f - alpha) * destColour->red;
-			//destColour->green = alpha * sourceColour->green + (1.0f - alpha) * destColour->green;
-			//destColour->blue = alpha * sourceColour->blue + (1.0f - alpha) * destColour->blue;
 
 			//Move texture pointer to next line
 			texturePnter += 4;
