@@ -1,4 +1,5 @@
 #include "Visualisation.h"
+#include "Sprite.h"
 
 Visualisation::Visualisation()
 {
@@ -34,4 +35,22 @@ int Visualisation::GetHeight()
 BYTE* Visualisation::GetScreenPnter()
 {
 	return screenPnter;
+}
+
+
+bool Visualisation::CreateSprite(const std::string& filename, const std::string& name)
+{
+	Sprite* newSprite = new Sprite();
+	if (!newSprite->Initialisation(filename))
+		return false;
+	mapSprite[name] = newSprite;
+	return true;
+}
+
+void Visualisation::DrawSprite(const std::string& name, const int& sX, const int& sY) const
+{
+	/*if (!mapSprite.find(name))
+		HAPI.UserMessage("Sprite not found in the map", "Warning");*/
+	mapSprite.at(name)->Render(screenPnter, screenSize.widthX, sX, sY);
+	
 }

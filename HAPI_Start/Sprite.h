@@ -13,13 +13,13 @@ class Sprite
 		T widthX;
 		T heightY;
 	};
-	vector2<int> spriteSize;
-	BYTE* texture;
-	vector2<int> texturePos;
+	vector2<int> spriteSize{ 0 , 0 };
+	BYTE* texture{ nullptr };
 
 public:
-	Sprite(const std::string& filename);
+	Sprite();	//THIS COULD BE DONE IN AN INITIATION FUNCTION
 	~Sprite();
-	void Blit(BYTE* screen, const int& screenWidth, BYTE* texture, int textureWidth, int textureHeight, int posX, int posY);
+	bool Initialisation(const std::string& filename);
+	void Render(BYTE* screen, const int& screenWidth, int posX, int posY);
 };
 

@@ -1,19 +1,25 @@
 #include "Sprite.h"
 
-Sprite::Sprite(const std::string& filename)
+Sprite::Sprite()
 {
-	if (!HAPI.LoadTexture(filename, &texture, spriteSize.widthX, spriteSize.heightY))
-		HAPI.UserMessage("Texture didn't load correctly", "Warning");
-	texturePos.widthX = 100;
-	texturePos.heightY = 100;
 }
 
 Sprite::~Sprite()
 {
-	delete[] this;
+	//delete[] this;
 }
 
-void Sprite::Blit(BYTE* screen, const int& screenWidth, BYTE* texture, int textureWidth, int textureHeight, int posX, int posY)
+bool Sprite::Initialisation(const std::string& filename)
+{
+	if (!HAPI.LoadTexture(filename, &texture, spriteSize.widthX, spriteSize.heightY))
+	{
+		HAPI.UserMessage("Texture didn't load correctly", "Warning");
+		return false;
+	}
+	return true;
+}
+
+void Sprite::Render(BYTE* screen, const int& screenWidth, int posX, int posY)
 {
 	//get the top left position of the screen
 	BYTE* screenPnter = screen + (posX + posY * screenWidth) * 4;
@@ -21,9 +27,9 @@ void Sprite::Blit(BYTE* screen, const int& screenWidth, BYTE* texture, int textu
 	BYTE* texturePnter = texture;
 
 	//HANDLE SPECIAL CASES. ALPHA = 0 & 255
-	for (int y = 0; y < textureHeight; y++)
+	for (int y = 0; y < spriteSize.heightY; y++)
 	{
-		for (int x = 0; x < textureWidth; x++)
+		for (int x = 0; x < spriteSize.widthX; x++)
 		{
 			BYTE blue = texturePnter[0];
 			BYTE green = texturePnter[1];
@@ -39,6 +45,6 @@ void Sprite::Blit(BYTE* screen, const int& screenWidth, BYTE* texture, int textu
 			//Move screen pointer to the next line
 			screenPnter += 4;
 		}
-		screenPnter += (screenWidth - textureWidth) * 4;
+		screenPnter += (screenWidth - spriteSize.widthX) * 4;
 	}
 }
