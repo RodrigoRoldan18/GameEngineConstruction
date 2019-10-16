@@ -20,6 +20,23 @@ void Visualisation::ClearToColour(const HAPI_TColour& argColour)
 	}
 }
 
+void Visualisation::Update()
+{
+	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
+	while (HAPI.Update())
+	{
+		ClearToColour(HAPI_TColour::BLACK);
+		DrawSprite("Background", 0, 0);
+		DrawSprite("WeirdThing", 0, 0);
+		DrawSprite("Player", playerPos.widthX, playerPos.heightY);
+
+		if (keyboardData.scanCode['W'] && playerPos.heightY > 0) { playerPos.heightY--; }
+		if (keyboardData.scanCode['A'] && playerPos.widthX > 0) { playerPos.widthX--; }
+		if (keyboardData.scanCode['S'] && playerPos.heightY < screenSize.heightY - mapSprite.at("Player")->GetSpriteY()) { playerPos.heightY++; } //am I allowed to use GetFunctions?
+		if (keyboardData.scanCode['D'] && playerPos.widthX < screenSize.widthX - mapSprite.at("Player")->GetSpriteX()) { playerPos.widthX++; } 
+	}
+}
+
 bool Visualisation::CreateSprite(const std::string& filename, const std::string& name)
 {
 	Sprite* newSprite = new Sprite();
@@ -29,10 +46,10 @@ bool Visualisation::CreateSprite(const std::string& filename, const std::string&
 	return true;
 }
 
-void Visualisation::DrawSprite(const std::string& name, const int& sX, const int& sY) const
+void Visualisation::DrawSprite(const std::string& name, const int& spriteX, const int& spriteY) const
 {
 	/*if (!mapSprite.find(name))
 		HAPI.UserMessage("Sprite not found in the map", "Warning");*/
-	mapSprite.at(name)->Render(screenPnter, screenSize.widthX, sX, sY);
+	mapSprite.at(name)->Render(screenPnter, screenSize.widthX, spriteX, spriteY);
 	
 }

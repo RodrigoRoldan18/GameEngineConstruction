@@ -34,11 +34,12 @@ using namespace HAPISPACE;
 void HAPI_Main()
 {
 	//-------------------------------
-	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
+	//const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();	//this was moved to visualisation update function. 
 	const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
 	HAPI.SetShowFPS(true);
 
-	Visualisation* m_visualisation{ new Visualisation };	
+	Visualisation* m_visualisation{ new Visualisation };
+
 	//-------------------------------	
 	if(!m_visualisation->CreateSprite("Data\\background.tga", "Background"))
 		HAPI.UserMessage("Couldn't load the texture", "Warning");
@@ -47,12 +48,5 @@ void HAPI_Main()
 	if(!m_visualisation->CreateSprite("Data\\alphaThing.tga", "WeirdThing"))
 		HAPI.UserMessage("Couldn't load the texture", "Warning");
 
-	while (HAPI.Update())
-	{
-		m_visualisation->ClearToColour(HAPI_TColour::BLACK);
-		m_visualisation->DrawSprite("Background", 0, 0);
-		m_visualisation->DrawSprite("WeirdThing", 0, 0);
-		m_visualisation->DrawSprite("Player", 100, 100);
-	}
-	//CONTROL THE PLAYER THING
+	m_visualisation->Update();
 }

@@ -21,10 +21,13 @@ class Visualisation
 	BYTE* screenPnter{ nullptr };
 	std::unordered_map<std::string, Sprite*> mapSprite;
 
+	vector2<int> playerPos{ 0 , 0 };//find another way to store the sprite position on the screen
+
 public:
 	Visualisation();
 	void ClearToColour(const HAPI_TColour& argColour);
+	void Update();
 	bool CreateSprite(const std::string& filename, const std::string& name);
-	void DrawSprite(const std::string& name, const int& sX, const int& sY) const;
+	void DrawSprite(const std::string& name, const int& spriteX, const int& spriteY) const;
 
 };

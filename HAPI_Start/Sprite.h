@@ -21,5 +21,8 @@ public:
 	~Sprite();
 	bool Initialisation(const std::string& filename);
 	void Render(BYTE* screen, const int& screenWidth, int posX, int posY);
+
+	int GetSpriteX();
+	int GetSpriteY();
 };
 

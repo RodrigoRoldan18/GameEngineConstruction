@@ -26,7 +26,6 @@ void Sprite::Render(BYTE* screen, const int& screenWidth, int posX, int posY)
 	//Temporary pointer for the texture data
 	BYTE* texturePnter = texture;
 
-	//HANDLE SPECIAL CASES. ALPHA = 0 & 255
 	for (int y = 0; y < spriteSize.heightY; y++)
 	{
 		for (int x = 0; x < spriteSize.widthX; x++)
@@ -57,4 +56,14 @@ void Sprite::Render(BYTE* screen, const int& screenWidth, int posX, int posY)
 		}
 		screenPnter += (screenWidth - spriteSize.widthX) * 4;
 	}
+}
+
+int Sprite::GetSpriteX()
+{
+	return spriteSize.widthX;
+}
+
+int Sprite::GetSpriteY()
+{
+	return spriteSize.heightY;
 }
