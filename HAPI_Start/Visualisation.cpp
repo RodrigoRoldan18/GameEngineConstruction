@@ -20,24 +20,6 @@ void Visualisation::ClearToColour(const HAPI_TColour& argColour)
 	}
 }
 
-int Visualisation::GetWidth()
-{
-	return screenSize.widthX;
-	//return screenWidth;
-}
-
-int Visualisation::GetHeight()
-{
-	return screenSize.heightY;
-	//return screenHeight; 
-}
-
-BYTE* Visualisation::GetScreenPnter()
-{
-	return screenPnter;
-}
-
-
 bool Visualisation::CreateSprite(const std::string& filename, const std::string& name)
 {
 	Sprite* newSprite = new Sprite();

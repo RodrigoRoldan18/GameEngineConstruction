@@ -33,143 +33,26 @@ using namespace HAPISPACE;
 
 void HAPI_Main()
 {
-	struct Scoordinates3D
-	{
-		int x;
-		int y;
-		int z;
-		int starSize;
-	};	
 	//-------------------------------
-	const int kNumStars(1000);	
-	int eyeDistance(100);
-	int CentreX(1024 / 2);
-	int CentreY(768 / 2);
-	HAPI_TColour starColour;
-
-	Visualisation* m_visualisation{ new Visualisation };
-
 	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
 	const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
 	HAPI.SetShowFPS(true);
-	//-------------------------------
 
-	//Initialise the stars
-	Scoordinates3D starCoor[kNumStars];
-	for (int i = 0; i < kNumStars; i++)
-	{
-		starCoor[i].x = rand() % m_visualisation->GetWidth();
-		starCoor[i].y = rand() % m_visualisation->GetHeight();
-		starCoor[i].z = rand() % 500;
-		starCoor[i].starSize = rand() % 5;
-	}	
+	Visualisation* m_visualisation{ new Visualisation };	
+	//-------------------------------	
+	if(!m_visualisation->CreateSprite("Data\\background.tga", "Background"))
+		HAPI.UserMessage("Couldn't load the texture", "Warning");
+	if (!m_visualisation->CreateSprite("Data\\playerSprite.tga", "Player"))
+		HAPI.UserMessage("Couldn't load the texture", "Warning");
+	if(!m_visualisation->CreateSprite("Data\\alphaThing.tga", "WeirdThing"))
+		HAPI.UserMessage("Couldn't load the texture", "Warning");
 
 	while (HAPI.Update())
 	{
 		m_visualisation->ClearToColour(HAPI_TColour::BLACK);
-		for (int i = 0; i < kNumStars; i++)
-		{
-			//Project the stars from 3D space into 2D space
-			float Sx = ((eyeDistance * (starCoor[i].x - (CentreX))) / (starCoor[i].z + eyeDistance)) + (CentreX);
-			float Sy = ((eyeDistance * (starCoor[i].y - (CentreY))) / (starCoor[i].z + eyeDistance)) + (CentreY);
-
-			//Render the stars
-			if ((Sx < m_visualisation->GetWidth() && Sx > 0) && (Sy < m_visualisation->GetHeight() && Sy > 0)) 
-			{ 
-				//Change the colour and the size depending on the z position
-				if (starCoor[i].z < 500.0f)
-				{
-					starColour = HAPI_TColour::WHITE;
-					starCoor[i].starSize = 1;
-				}
-				if (starCoor[i].z < 400.0f)
-				{
-					starColour = HAPI_TColour(255, 245, 235, 255);
-					starCoor[i].starSize = 2;
-				}
-				if (starCoor[i].z < 300.0f)
-				{
-					starColour = HAPI_TColour(255, 235, 215, 255);
-					starCoor[i].starSize = 3;
-				}
-				if (starCoor[i].z < 200.0f)
-				{
-					starColour = HAPI_TColour(255, 225, 195, 255);
-					starCoor[i].starSize = 4;
-				}
-				if (starCoor[i].z < 100.0f)
-				{
-					starColour = HAPI_TColour(255, 215, 175, 255);
-					starCoor[i].starSize = 5;
-				}
-				if (starCoor[i].starSize > 0)
-				{
-					//Increase the size of the star 
-					for (int starWidth = 0; starWidth < starCoor[i].starSize; starWidth++)
-					{
-						for (int starHeight = 0; starHeight < starCoor[i].starSize; starHeight++)
-						{
-							int offset = ((Sy + starHeight) * m_visualisation->GetWidth() + (Sx + starWidth)) * 4;
-							BYTE* pnter = m_visualisation->GetScreenPnter() + offset;
-							if ((Sx + starWidth < m_visualisation->GetWidth() && Sx > 0) && (Sy + starHeight < m_visualisation->GetHeight() && Sy > 0))
-							{
-								//Render the star
-								memcpy(pnter, &starColour, 4);
-							}
-						}
-					}
-				}
-				else			
-				{
-					//Render the star
-					int offset = (Sy * m_visualisation->GetWidth() + Sx) * 4;
-					BYTE* pnter = m_visualisation->GetScreenPnter() + offset;
-					memcpy(pnter, &starColour, 4);
-				}
-			}
-
-			//Move the stars
-			starCoor[i].z -= 0.1f;
-			if (starCoor[i].z <= 0)
-			{
-				starCoor[i].x = rand() % m_visualisation->GetWidth();
-				starCoor[i].y = rand() % m_visualisation->GetHeight();
-				starCoor[i].z = 500;
-			}				
-		}
-		//Control the spaceship
-		if (controllerData.isAttached)
-		{
-			if (controllerData.digitalButtons[HK_DIGITAL_DPAD_RIGHT]) { texPosX++; }
-			if (controllerData.digitalButtons[HK_DIGITAL_DPAD_LEFT]) { texPosX--; }
-		}
-		if (keyboardData.scanCode['L'] && texPosX < m_visualisation->GetWidth() - textureWidth) { texPosX++; }
-		if (keyboardData.scanCode['J'] && texPosX > 0) { texPosX--; }
-		if (keyboardData.scanCode['I'] && texPosY > 0) { texPosY--; }
-		if (keyboardData.scanCode['K'] && texPosY < m_visualisation->GetHeight() - textureHeight) { texPosY++; }
-		//Render the spaceship
-		Blit(m_visualisation->GetScreenPnter(), m_visualisation->GetWidth(), texture, textureWidth, textureHeight, texPosX, texPosY);
-		//Display controls
-		HAPI.RenderText(10, 20, HAPI_TColour::YELLOW, "Change the eye distance - ARROWS (UP, DOWN)", 14, HAPI_TextStyle::eRegular);
-		HAPI.RenderText(10, 40, HAPI_TColour::YELLOW, "Move the point where stars spawn - WASD", 14, HAPI_TextStyle::eRegular);
-		HAPI.RenderText(10, 60, HAPI_TColour::YELLOW, "Control the spaceship - IJKL", 14, HAPI_TextStyle::eRegular);
-
-		//Control the stars
-		if (keyboardData.scanCode[HK_UP]) { eyeDistance++; }
-		if (eyeDistance > 10)
-		{
-			if (keyboardData.scanCode[HK_DOWN]) { eyeDistance--; }
-		}
-		if (keyboardData.scanCode['W']) { CentreY--; }
-		if (keyboardData.scanCode['A']) { CentreX--; }
-		if (keyboardData.scanCode['S']) { CentreY++; }
-		if (keyboardData.scanCode['D']) { CentreX++; }
+		m_visualisation->DrawSprite("Background", 0, 0);
+		m_visualisation->DrawSprite("WeirdThing", 0, 0);
+		m_visualisation->DrawSprite("Player", 100, 100);
 	}
-	delete[] texture;
+	//CONTROL THE PLAYER THING
 }
-
-/*
-CAN REMOVE STARS NOW
-STORE SPRITES IN VISUALISATION
-CAN CONTROL THE SPACESHIP IN THE VISUALISATION CLASS
-*/

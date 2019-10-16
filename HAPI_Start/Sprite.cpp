@@ -35,11 +35,21 @@ void Sprite::Render(BYTE* screen, const int& screenWidth, int posX, int posY)
 			BYTE green = texturePnter[1];
 			BYTE red = texturePnter[2];
 			BYTE alpha = texturePnter[3];
-
-			screenPnter[0] = screenPnter[0] + ((alpha * (blue - screenPnter[0])) >> 8);
-			screenPnter[1] = screenPnter[1] + ((alpha * (green - screenPnter[1])) >> 8);
-			screenPnter[2] = screenPnter[2] + ((alpha * (red - screenPnter[2])) >> 8);
-
+			
+			if (alpha == 255)
+			{
+				//screen = texture
+				screenPnter[0] = blue;
+				screenPnter[1] = green;
+				screenPnter[2] = red;
+			}
+			else if(alpha > 0)
+			{
+				screenPnter[0] = screenPnter[0] + ((alpha * (blue - screenPnter[0])) >> 8);
+				screenPnter[1] = screenPnter[1] + ((alpha * (green - screenPnter[1])) >> 8);
+				screenPnter[2] = screenPnter[2] + ((alpha * (red - screenPnter[2])) >> 8);
+			}			
+			
 			//Move texture pointer to next line
 			texturePnter += 4;
 			//Move screen pointer to the next line

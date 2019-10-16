@@ -17,7 +17,7 @@ class Sprite
 	BYTE* texture{ nullptr };
 
 public:
-	Sprite();	//THIS COULD BE DONE IN AN INITIATION FUNCTION
+	Sprite();
 	~Sprite();
 	bool Initialisation(const std::string& filename);
 	void Render(BYTE* screen, const int& screenWidth, int posX, int posY);

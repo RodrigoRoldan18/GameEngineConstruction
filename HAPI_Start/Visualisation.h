@@ -24,11 +24,6 @@ class Visualisation
 public:
 	Visualisation();
 	void ClearToColour(const HAPI_TColour& argColour);
-
-	int GetWidth();
-	int GetHeight();
-	BYTE* GetScreenPnter();	//DONT DO ANY GETTERS!!!!
-
 	bool CreateSprite(const std::string& filename, const std::string& name);
 	void DrawSprite(const std::string& name, const int& sX, const int& sY) const;
 
