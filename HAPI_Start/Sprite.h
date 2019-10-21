@@ -22,7 +22,6 @@ public:
 	bool Initialisation(const std::string& filename);
 	void Render(BYTE* screen, const int& screenWidth, int posX, int posY);
 
-	int GetSpriteX();
-	int GetSpriteY();
+	int GetSpriteX() const { return spriteSize.widthX; }
+	int GetSpriteY() const { return spriteSize.heightY; }
 };
-

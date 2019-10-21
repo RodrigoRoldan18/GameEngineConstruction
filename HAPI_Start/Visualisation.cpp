@@ -27,7 +27,6 @@ void Visualisation::Update()
 	{
 		ClearToColour(HAPI_TColour::BLACK);
 		DrawSprite("Background", 0, 0);
-		DrawSprite("WeirdThing", 0, 0);
 		DrawSprite("Player", playerPos.widthX, playerPos.heightY);
 
 		if (keyboardData.scanCode['W'] && playerPos.heightY > 0) { playerPos.heightY--; }
@@ -48,8 +47,10 @@ bool Visualisation::CreateSprite(const std::string& filename, const std::string&
 
 void Visualisation::DrawSprite(const std::string& name, const int& spriteX, const int& spriteY) const
 {
-	/*if (!mapSprite.find(name))
-		HAPI.UserMessage("Sprite not found in the map", "Warning");*/
+	if (!mapSprite.at(name))
+	{
+		HAPI.UserMessage("Can't draw the " + name, "Warning");
+		return;
+	}
 	mapSprite.at(name)->Render(screenPnter, screenSize.widthX, spriteX, spriteY);
-	
 }
