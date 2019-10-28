@@ -34,10 +34,25 @@ void Visualisation::Update()
 		DrawSprite("Background", 0, 0);
 		DrawSprite("Player", playerPos.widthX, playerPos.heightY);
 
-		if (keyboardData.scanCode['W']) { playerPos.heightY--; }
-		if (keyboardData.scanCode['A']) { playerPos.widthX--; }
-		if (keyboardData.scanCode['S']) { playerPos.heightY++; } //am I allowed to use GetFunctions?
-		if (keyboardData.scanCode['D']) { playerPos.widthX++; } 
+		if (mapSprite.at("Player"))
+		{
+			if (keyboardData.scanCode['W'])
+			{
+				playerPos.heightY--;
+			}
+			if (keyboardData.scanCode['A'])
+			{
+				playerPos.widthX--;
+			}
+			if (keyboardData.scanCode['S'])
+			{
+				playerPos.heightY++;
+			}
+			if (keyboardData.scanCode['D'])
+			{
+				playerPos.widthX++;
+			}
+		}		
 	}
 }
 

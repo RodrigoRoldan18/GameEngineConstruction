@@ -24,7 +24,7 @@ class Visualisation
 
 	Rectangle rect;
 
-	vector2<int> playerPos{ 0 , 0 };//find another way to store the sprite position on the screen
+	vector2<int> playerPos{ 0 , 100 };//find another way to store the sprite position on the screen
 
 public:
 	Visualisation();

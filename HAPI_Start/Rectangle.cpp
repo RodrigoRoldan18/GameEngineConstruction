@@ -11,10 +11,10 @@ Rectangle::~Rectangle()
 
 bool Rectangle::CompletelyOutside(const Rectangle& other)
 {	
-	if (other.right < left) { return true; }
-	if (other.top > bottom) { return true; }
-	if (other.left > right) { return true; }
-	if (other.bottom < top) { return true; }	
+	if (left > other.right) { return true; }
+	if (bottom < other.top) { return true; }
+	if (right < other.left) { return true; }
+	if (top > other.bottom) { return true; }	
 	return false;
 }
 
