@@ -2,6 +2,7 @@
 
 // Include the HAPI header to get access to all of HAPIs interfaces
 #include <HAPI_lib.h>
+#include "Rectangle.h"
 // HAPI itself is wrapped in the HAPISPACE namespace
 using namespace HAPISPACE;
 
@@ -15,12 +16,13 @@ class Sprite
 	};
 	vector2<int> spriteSize{ 0 , 0 };
 	BYTE* texture{ nullptr };
+	Rectangle rect;
 
 public:
 	Sprite();
 	~Sprite();
 	bool Initialisation(const std::string& filename);
-	void Render(BYTE* screen, const int& screenWidth, int posX, int posY);
+	void ClipBlit(BYTE* dest, const Rectangle& destRect, int& posX, int& posY);
 
 	int GetSpriteX() const { return spriteSize.widthX; }
 	int GetSpriteY() const { return spriteSize.heightY; }

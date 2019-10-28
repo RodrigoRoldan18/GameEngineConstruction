@@ -25,10 +25,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Rectangle.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Visualisation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Rectangle.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Visualisation.h" />
   </ItemGroup>

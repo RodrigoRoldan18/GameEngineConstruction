@@ -8,6 +8,11 @@ Visualisation::Visualisation()
 	if (!HAPI.Initialise(screenSize.widthX, screenSize.heightY, "Games Engine Construction ICA - V8008106"))
 		return;	
 	screenPnter = HAPI.GetScreenPointer();
+
+	rect.left = 0;
+	rect.top = 0;
+	rect.right = screenSize.widthX;
+	rect.bottom = screenSize.heightY;
 }
 
 void Visualisation::ClearToColour(const HAPI_TColour& argColour)
@@ -29,10 +34,10 @@ void Visualisation::Update()
 		DrawSprite("Background", 0, 0);
 		DrawSprite("Player", playerPos.widthX, playerPos.heightY);
 
-		if (keyboardData.scanCode['W'] && playerPos.heightY > 0) { playerPos.heightY--; }
-		if (keyboardData.scanCode['A'] && playerPos.widthX > 0) { playerPos.widthX--; }
-		if (keyboardData.scanCode['S'] && playerPos.heightY < screenSize.heightY - mapSprite.at("Player")->GetSpriteY()) { playerPos.heightY++; } //am I allowed to use GetFunctions?
-		if (keyboardData.scanCode['D'] && playerPos.widthX < screenSize.widthX - mapSprite.at("Player")->GetSpriteX()) { playerPos.widthX++; } 
+		if (keyboardData.scanCode['W']) { playerPos.heightY--; }
+		if (keyboardData.scanCode['A']) { playerPos.widthX--; }
+		if (keyboardData.scanCode['S']) { playerPos.heightY++; } //am I allowed to use GetFunctions?
+		if (keyboardData.scanCode['D']) { playerPos.widthX++; } 
 	}
 }
 
@@ -45,12 +50,12 @@ bool Visualisation::CreateSprite(const std::string& filename, const std::string&
 	return true;
 }
 
-void Visualisation::DrawSprite(const std::string& name, const int& spriteX, const int& spriteY) const
+void Visualisation::DrawSprite(const std::string& name, int spriteX, int spriteY) const
 {
 	if (!mapSprite.at(name))
 	{
 		HAPI.UserMessage("Can't draw the " + name, "Warning");
 		return;
 	}
-	mapSprite.at(name)->Render(screenPnter, screenSize.widthX, spriteX, spriteY);
+	mapSprite.at(name)->ClipBlit(screenPnter, rect, spriteX, spriteY);
 }

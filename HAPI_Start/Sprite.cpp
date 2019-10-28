@@ -1,4 +1,5 @@
 #include "Sprite.h"
+#include <algorithm>
 
 Sprite::Sprite()
 {
@@ -16,19 +17,44 @@ bool Sprite::Initialisation(const std::string& filename)
 		HAPI.UserMessage("Texture " + filename +" didn't load correctly", "Warning");
 		return false;
 	}
+	rect.left = 0;
+	rect.top = 0;
+	rect.right = spriteSize.widthX;
+	rect.bottom = spriteSize.heightY;
 	return true;
 }
 
-void Sprite::Render(BYTE* screen, const int& screenWidth, int posX, int posY)
+void Sprite::ClipBlit(BYTE* dest, const Rectangle& destRect, int& posX, int& posY)
 {
-	//get the top left position of the screen
-	BYTE* screenPnter = screen + (size_t)(posX + posY * screenWidth) * 4;
-	//Temporary pointer for the texture data
-	BYTE* texturePnter = texture;
-
-	for (int y = 0; y < spriteSize.heightY; y++)
+	//Create a new source rectangle without position
+	Rectangle tempClippedRect(rect);
+	//Check for completely outside or inside
+	if (tempClippedRect.CompletelyOutside(destRect))
 	{
-		for (int x = 0; x < spriteSize.widthX; x++)
+		return;
+	}
+	if (!tempClippedRect.CompletelyInside(destRect))
+	{
+		//Translato to screen space
+		tempClippedRect.Translate(posX, posY);
+		//Clip against destination rectangle
+		tempClippedRect.ClippingTo(destRect);
+		//Translate back into source space
+		tempClippedRect.Translate(-posX, -posY);
+
+		//Clamping to negative
+		posX = std::max(0, posX);
+		posY = std::max(0, posY);
+	}	
+
+	//get the top left position of the screen
+	BYTE* screenPnter = dest + (size_t)(posX + posY * destRect.Width()) * 4;
+	//Temporary pointer for the texture data
+	BYTE* texturePnter = texture + (tempClippedRect.left + tempClippedRect.top * destRect.Width()) * 4;
+
+	for (int y = 0; y < tempClippedRect.Height(); y++)
+	{
+		for (int x = 0; x < tempClippedRect.Width(); x++)
 		{
 			BYTE red = texturePnter[0];
 			BYTE green = texturePnter[1];
@@ -54,6 +80,7 @@ void Sprite::Render(BYTE* screen, const int& screenWidth, int posX, int posY)
 			//Move screen pointer to the next line
 			screenPnter += 4;
 		}
-		screenPnter += ((size_t)screenWidth - spriteSize.widthX) * 4;
+		screenPnter += ((size_t)destRect.Width() - tempClippedRect.Width()) * 4;
+		texturePnter += spriteSize.widthX - tempClippedRect.Width() * 4;
 	}
 }
