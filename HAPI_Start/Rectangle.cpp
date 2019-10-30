@@ -31,8 +31,8 @@ void Rectangle::ClippingTo(const Rectangle& other)
 {
 	left = std::max(left, other.left);
 	top = std::max(top, other.top);
-	right = std::max(right, other.right);
-	bottom = std::max(bottom, other.bottom);
+	right = std::min(right, other.right);
+	bottom = std::min(bottom, other.bottom);
 }
 
 void Rectangle::Translate(const int& posX, const int& posY)

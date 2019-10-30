@@ -28,29 +28,29 @@ void Sprite::ClipBlit(BYTE* dest, const Rectangle& destRect, int& posX, int& pos
 
 	//Create a new source rectangle without 
 	Rectangle tempClippedRect(sourceRect);
-	//Check for completely outside or inside
+	//Translato to screen space
+	tempClippedRect.Translate(posX, posY);
+
 	if (tempClippedRect.CompletelyOutside(destRect))
 	{
 		return;
 	}
 	if (!tempClippedRect.CompletelyInside(destRect))
-	{
-		//Translato to screen space
-		tempClippedRect.Translate(posX, posY);
+	{		
 		//Clip against destination rectangle
 		tempClippedRect.ClippingTo(destRect);
-		//Translate back into source space
-		tempClippedRect.Translate(-posX, -posY);
+	}	
+	//Translate back into source space
+	tempClippedRect.Translate(-posX, -posY);
 
-		//Clamping to negative
-		posX = std::max(posX, 0);
-		posY = std::max(posY, 0);
-	}		
+	//Clamping to negative
+	posX = std::max(posX, 0);
+	posY = std::max(posY, 0);			
 
 	//get the top left position of the screen
-	BYTE* destPnter = dest + (size_t)(posX + posY * destRect.Width()) * 4;
+	BYTE* destPnter = dest + (posX + posY * (size_t)destRect.Width()) * 4;	//gets the point in the destination where to start drawing
 	//Temporary pointer for the texture data
-	BYTE* sourcePnter = texture + (tempClippedRect.left + tempClippedRect.top * tempClippedRect.Width()) * 4;
+	BYTE* sourcePnter = texture + (tempClippedRect.left + tempClippedRect.top * (size_t)tempClippedRect.Width()) * 4;	//gets the point where to start drawing the texture
 
 	for (int y = 0; y < tempClippedRect.Height(); y++)
 	{
@@ -80,6 +80,7 @@ void Sprite::ClipBlit(BYTE* dest, const Rectangle& destRect, int& posX, int& pos
 			//Move screen pointer to the next line
 			destPnter += 4;
 		}
-		destPnter += ((size_t)destRect.Width() - sourceRect.Width()) * 4;
+		destPnter += ((size_t)destRect.Width() - tempClippedRect.Width()) * 4;	
+		sourcePnter += (sourceRect.Width() - (size_t)tempClippedRect.Width()) * 4;
 	}
 }

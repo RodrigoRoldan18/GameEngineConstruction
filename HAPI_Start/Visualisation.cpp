@@ -51,6 +51,7 @@ void Visualisation::Update()
 			{
 				playerPos.widthX++;
 			}
+			//playerPos.widthX--;
 		}		
 	}
 }
