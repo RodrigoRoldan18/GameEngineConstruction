@@ -9,10 +9,10 @@ Visualisation::Visualisation()
 		return;	
 	screenPnter = HAPI.GetScreenPointer();
 
-	rect.left = 0;
-	rect.top = 0;
-	rect.right = screenSize.widthX;
-	rect.bottom = screenSize.heightY;
+	bgRect.left = 0;
+	bgRect.top = 0;
+	bgRect.right = screenSize.widthX;
+	bgRect.bottom = screenSize.heightY;
 }
 
 void Visualisation::ClearToColour(const HAPI_TColour& argColour)
@@ -31,7 +31,6 @@ void Visualisation::Update()
 	while (HAPI.Update())
 	{
 		ClearToColour(HAPI_TColour::BLACK);
-		DrawSprite("Background", 0, 0);
 		DrawSprite("Player", playerPos.widthX, playerPos.heightY);
 
 		if (mapSprite.at("Player"))
@@ -72,5 +71,5 @@ void Visualisation::DrawSprite(const std::string& name, int spriteX, int spriteY
 		HAPI.UserMessage("Can't draw the " + name, "Warning");
 		return;
 	}
-	mapSprite.at(name)->ClipBlit(screenPnter, rect, spriteX, spriteY);
+	mapSprite.at(name)->ClipBlit(screenPnter, bgRect, spriteX, spriteY);
 }

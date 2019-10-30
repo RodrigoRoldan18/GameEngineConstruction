@@ -7,7 +7,6 @@ Sprite::Sprite()
 
 Sprite::~Sprite()
 {
-	//delete[] this;
 }
 
 bool Sprite::Initialisation(const std::string& filename)
@@ -17,22 +16,18 @@ bool Sprite::Initialisation(const std::string& filename)
 		HAPI.UserMessage("Texture " + filename +" didn't load correctly", "Warning");
 		return false;
 	}
-	rect.left = 0;
-	rect.top = 0;
-	rect.right = spriteSize.widthX;
-	rect.bottom = spriteSize.heightY;
+	sourceRect.left = 0;
+	sourceRect.top = 0;
+	sourceRect.right = spriteSize.widthX;
+	sourceRect.bottom = spriteSize.heightY;
 	return true;
 }
 
 void Sprite::ClipBlit(BYTE* dest, const Rectangle& destRect, int& posX, int& posY)
 {
-	/*rect.left = posX;
-	rect.top = posY;
-	rect.right = spriteSize.widthX + posX;
-	rect.bottom = spriteSize.heightY + posY;*/
 
 	//Create a new source rectangle without 
-	Rectangle tempClippedRect(rect);
+	Rectangle tempClippedRect(sourceRect);
 	//Check for completely outside or inside
 	if (tempClippedRect.CompletelyOutside(destRect))
 	{
@@ -48,9 +43,9 @@ void Sprite::ClipBlit(BYTE* dest, const Rectangle& destRect, int& posX, int& pos
 		tempClippedRect.Translate(-posX, -posY);
 
 		//Clamping to negative
-		posX = std::max(0, posX);
-		posY = std::max(0, posY);
-	}	
+		posX = std::max(posX, 0);
+		posY = std::max(posY, 0);
+	}		
 
 	//get the top left position of the screen
 	BYTE* destPnter = dest + (size_t)(posX + posY * destRect.Width()) * 4;
@@ -85,7 +80,6 @@ void Sprite::ClipBlit(BYTE* dest, const Rectangle& destRect, int& posX, int& pos
 			//Move screen pointer to the next line
 			destPnter += 4;
 		}
-		destPnter += ((size_t)destRect.Width() - rect.Width()) * 4;
-		//texturePnter += spriteSize.widthX - rect.Width() * 4;
+		destPnter += ((size_t)destRect.Width() - sourceRect.Width()) * 4;
 	}
 }

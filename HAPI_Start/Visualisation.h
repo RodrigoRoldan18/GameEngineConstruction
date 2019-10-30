@@ -20,9 +20,9 @@ class Visualisation
 	};
 	vector2<int> screenSize{ 0 , 0 };
 	BYTE* screenPnter{ nullptr };
-	std::unordered_map<std::string, Sprite*> mapSprite;
+	Rectangle bgRect;
 
-	Rectangle rect;
+	std::unordered_map<std::string, Sprite*> mapSprite;
 
 	vector2<int> playerPos{ 0 , 100 };//find another way to store the sprite position on the screen
 

@@ -16,7 +16,7 @@ class Sprite
 	};
 	vector2<int> spriteSize{ 0 , 0 };
 	BYTE* texture{ nullptr };
-	Rectangle rect;
+	Rectangle sourceRect;
 
 public:
 	Sprite();

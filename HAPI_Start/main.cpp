@@ -41,11 +41,6 @@ void HAPI_Main()
 	Visualisation* m_visualisation{ new Visualisation };
 
 	//-------------------------------	
-	if (!m_visualisation->CreateSprite("Data\\background.tga", "Background"))
-	{
-		HAPI.UserMessage("Couldn't load the texture for the Background", "Warning");
-		return;
-	}
 	if (!m_visualisation->CreateSprite("Data\\alphaThing.tga", "Player"))
 	{
 		HAPI.UserMessage("Couldn't load the texture for the Player", "Warning");
