@@ -24,6 +24,7 @@
 // Include the HAPI header to get access to all of HAPIs interfaces
 #include <HAPI_lib.h>
 #include "Visualisation.h"
+#include "Vector2.h"
 
 // HAPI itself is wrapped in the HAPISPACE namespace
 using namespace HAPISPACE;
@@ -34,9 +35,10 @@ using namespace HAPISPACE;
 void HAPI_Main()
 {
 	//-------------------------------
-	//const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();	//this was moved to visualisation update function. 
-	const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
+	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
 	HAPI.SetShowFPS(true);
+	vector2<int> playerPos{ 0 , 100 };
+	bool doRumble{ false };
 
 	Visualisation* m_visualisation{ new Visualisation };
 
@@ -47,6 +49,45 @@ void HAPI_Main()
 		return;
 	}
 
-	m_visualisation->Update();
+	while (HAPI.Update())
+	{
+		const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
+		m_visualisation->ClearToColour(HAPI_TColour::BLACK);
+		m_visualisation->DrawSprite("Player", playerPos.widthX, playerPos.heightY);
+
+		if (controllerData.isAttached)
+		{
+			if (keyboardData.scanCode['W'] || controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_Y] > 15000)
+			{
+				playerPos.heightY--;
+			}
+			if (keyboardData.scanCode['A'] || controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] < -15000)
+			{
+				playerPos.widthX--;
+			}
+			if (keyboardData.scanCode['S'] || controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_Y] < -15000)
+			{
+				playerPos.heightY++;
+			}
+			if (keyboardData.scanCode['D'] || controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] > 15000)
+			{
+				playerPos.widthX++;
+			}
+		}
+
+		if (playerPos.widthX < 600 && playerPos.widthX > 500)
+		{
+			if (playerPos.heightY < 400 && playerPos.heightY > 300)
+
+			{
+				HAPI.SetControllerRumble(0, 20000, 20000);
+			}
+		}
+		else
+		{
+			HAPI.SetControllerRumble(0, 0, 0);
+		}
+	}
 	delete m_visualisation;
+	HAPI.SetControllerRumble(0, 0, 0);
 }

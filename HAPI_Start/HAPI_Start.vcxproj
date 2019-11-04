@@ -28,11 +28,14 @@
     <ClCompile Include="Rectangle.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Visualisation.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="Vector2.h" />
     <ClInclude Include="Visualisation.h" />
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

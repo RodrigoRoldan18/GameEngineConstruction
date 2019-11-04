@@ -5,6 +5,8 @@
 // Include the HAPI header to get access to all of HAPIs interfaces
 #include <HAPI_lib.h>
 #include "Rectangle.h"
+#include "Vector2.h"
+
 // HAPI itself is wrapped in the HAPISPACE namespace
 using namespace HAPISPACE;
 
@@ -12,25 +14,20 @@ class Sprite;
 
 class Visualisation
 {
-	template<class T>
-	struct vector2
-	{
-		T widthX;
-		T heightY;
-	};
+private:
 	vector2<int> screenSize{ 0 , 0 };
 	BYTE* screenPnter{ nullptr };
 	Rectangle bgRect;
 
 	std::unordered_map<std::string, Sprite*> mapSprite;
 
-	vector2<int> playerPos{ 0 , 100 };//find another way to store the sprite position on the screen
-
 public:
 	Visualisation();
+	~Visualisation();
 	void ClearToColour(const HAPI_TColour& argColour);
-	void Update();
 	bool CreateSprite(const std::string& filename, const std::string& name);
 	void DrawSprite(const std::string& name, int spriteX, int spriteY) const;
 
+	int GetScreenWidth() const { return screenSize.widthX; }
+	int GetScreenHeight() const { return screenSize.heightY; }
 };

@@ -15,6 +15,14 @@ Visualisation::Visualisation()
 	bgRect.bottom = screenSize.heightY;
 }
 
+Visualisation::~Visualisation()
+{
+	for (auto& sprite : mapSprite)
+	{
+		delete sprite.second;
+	}
+}
+
 void Visualisation::ClearToColour(const HAPI_TColour& argColour)
 {
 	BYTE* temp = screenPnter;
@@ -22,37 +30,6 @@ void Visualisation::ClearToColour(const HAPI_TColour& argColour)
 	{
 		memcpy(temp, &argColour, 4);
 		temp += 4;
-	}
-}
-
-void Visualisation::Update()
-{
-	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
-	while (HAPI.Update())
-	{
-		ClearToColour(HAPI_TColour::BLACK);
-		DrawSprite("Player", playerPos.widthX, playerPos.heightY);
-
-		if (mapSprite.at("Player"))
-		{
-			if (keyboardData.scanCode['W'])
-			{
-				playerPos.heightY--;
-			}
-			if (keyboardData.scanCode['A'])
-			{
-				playerPos.widthX--;
-			}
-			if (keyboardData.scanCode['S'])
-			{
-				playerPos.heightY++;
-			}
-			if (keyboardData.scanCode['D'])
-			{
-				playerPos.widthX++;
-			}
-			//playerPos.widthX--;
-		}		
 	}
 }
 

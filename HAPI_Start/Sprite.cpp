@@ -7,6 +7,7 @@ Sprite::Sprite()
 
 Sprite::~Sprite()
 {
+	delete[] texture;
 }
 
 bool Sprite::Initialisation(const std::string& filename)
@@ -39,7 +40,13 @@ void Sprite::ClipBlit(BYTE* dest, const Rectangle& destRect, int& posX, int& pos
 	{		
 		//Clip against destination rectangle
 		tempClippedRect.ClippingTo(destRect);
-	}	
+	}
+	else
+	{
+		//Go to the other function for optimisation
+		Render(dest, destRect.Width(), posX, posY);
+		return;
+	}
 	//Translate back into source space
 	tempClippedRect.Translate(-posX, -posY);
 
@@ -50,7 +57,7 @@ void Sprite::ClipBlit(BYTE* dest, const Rectangle& destRect, int& posX, int& pos
 	//get the top left position of the screen
 	BYTE* destPnter = dest + (posX + posY * (size_t)destRect.Width()) * 4;	//gets the point in the destination where to start drawing
 	//Temporary pointer for the texture data
-	BYTE* sourcePnter = texture + (tempClippedRect.left + tempClippedRect.top * (size_t)tempClippedRect.Width()) * 4;	//gets the point where to start drawing the texture
+	BYTE* sourcePnter = texture + (tempClippedRect.left + tempClippedRect.top * (size_t)sourceRect.Width()) * 4;	//gets the point where to start drawing the texture
 
 	for (int y = 0; y < tempClippedRect.Height(); y++)
 	{
@@ -82,5 +89,44 @@ void Sprite::ClipBlit(BYTE* dest, const Rectangle& destRect, int& posX, int& pos
 		}
 		destPnter += ((size_t)destRect.Width() - tempClippedRect.Width()) * 4;	
 		sourcePnter += (sourceRect.Width() - (size_t)tempClippedRect.Width()) * 4;
+	}
+}
+
+void Sprite::Render(BYTE* dest, const int& screenWidth, const int& posX, const int& posY)
+{
+	//get the top left position of the screen
+	BYTE* screenPnter = dest + (posX + posY * (size_t)screenWidth) * 4;
+	//Temporary pointer for the texture data
+	BYTE* texturePnter = texture;
+
+	for (int y = 0; y < spriteSize.heightY; y++)
+	{
+		for (int x = 0; x < spriteSize.widthX; x++)
+		{
+			BYTE red = texturePnter[0];
+			BYTE green = texturePnter[1];
+			BYTE blue = texturePnter[2];
+			BYTE alpha = texturePnter[3];
+
+			if (alpha == 255)
+			{
+				//screen = texture
+				screenPnter[0] = red;
+				screenPnter[1] = green;
+				screenPnter[2] = blue;
+			}
+			else if (alpha > 0)
+			{
+				screenPnter[0] = screenPnter[0] + ((alpha * (red - screenPnter[0])) >> 8);
+				screenPnter[1] = screenPnter[1] + ((alpha * (green - screenPnter[1])) >> 8);
+				screenPnter[2] = screenPnter[2] + ((alpha * (blue - screenPnter[2])) >> 8);
+			}
+
+			//Move texture pointer to next line
+			texturePnter += 4;
+			//Move screen pointer to the next line
+			screenPnter += 4;
+		}
+		screenPnter += ((size_t)screenWidth - spriteSize.widthX) * 4;
 	}
 }
