@@ -35,15 +35,20 @@ using namespace HAPISPACE;
 void HAPI_Main()
 {
 	//-------------------------------
-	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
 	HAPI.SetShowFPS(true);
 	vector2<int> playerPos{ 0 , 100 };
+	vector2<int> backgroundPos{ 0, 0 };
 	bool doRumble{ false };
 
 	Visualisation* m_visualisation{ new Visualisation };
-
+	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
 	//-------------------------------	
-	if (!m_visualisation->CreateSprite("Data\\alphaThing.tga", "Player"))
+	if (!m_visualisation->CreateSprite("Data\\planetBg.png", "Background"))
+	{
+		HAPI.UserMessage("Couldn't load the texture for the Background", "Warning");
+		return;
+	}
+	if (!m_visualisation->CreateSprite("Data\\dogstill1.png", "Player"))
 	{
 		HAPI.UserMessage("Couldn't load the texture for the Player", "Warning");
 		return;
@@ -53,6 +58,9 @@ void HAPI_Main()
 	{
 		const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
 		m_visualisation->ClearToColour(HAPI_TColour::BLACK);
+		m_visualisation->DrawSprite("Background", backgroundPos.widthX, backgroundPos.heightY);
+		m_visualisation->DrawSprite("Background", backgroundPos.widthX - m_visualisation->GetScreenWidth(), backgroundPos.heightY);//left
+		m_visualisation->DrawSprite("Background", backgroundPos.widthX + m_visualisation->GetScreenWidth(), backgroundPos.heightY);//right
 		m_visualisation->DrawSprite("Player", playerPos.widthX, playerPos.heightY);
 
 		if (controllerData.isAttached)
@@ -64,6 +72,8 @@ void HAPI_Main()
 			if (keyboardData.scanCode['A'] || controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] < -15000)
 			{
 				playerPos.widthX--;
+				backgroundPos.widthX++;
+				if (backgroundPos.widthX == m_visualisation->GetScreenWidth()) { backgroundPos.widthX = 0; }
 			}
 			if (keyboardData.scanCode['S'] || controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_Y] < -15000)
 			{
@@ -72,6 +82,8 @@ void HAPI_Main()
 			if (keyboardData.scanCode['D'] || controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] > 15000)
 			{
 				playerPos.widthX++;
+				backgroundPos.widthX--;
+				if (backgroundPos.widthX == -m_visualisation->GetScreenWidth()) { backgroundPos.widthX = 0; }
 			}
 		}
 

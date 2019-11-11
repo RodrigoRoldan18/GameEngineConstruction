@@ -3,7 +3,7 @@
 
 Visualisation::Visualisation()
 {
-	screenSize.widthX = 1024;
+	screenSize.widthX = 1280;//1024
 	screenSize.heightY = 768;
 	if (!HAPI.Initialise(screenSize.widthX, screenSize.heightY, "Games Engine Construction ICA - V8008106"))
 		return;	
