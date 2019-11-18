@@ -23,8 +23,7 @@
 
 // Include the HAPI header to get access to all of HAPIs interfaces
 #include <HAPI_lib.h>
-#include "Visualisation.h"
-#include "Vector2.h"
+#include "World.h"
 
 // HAPI itself is wrapped in the HAPISPACE namespace
 using namespace HAPISPACE;
@@ -35,71 +34,9 @@ using namespace HAPISPACE;
 void HAPI_Main()
 {
 	//-------------------------------
-	HAPI.SetShowFPS(true);
-	vector2<int> playerPos{ 0 , 100 };
-	vector2<int> backgroundPos{ 0, 0 };
-	bool doRumble{ false };
-
-	Visualisation* m_visualisation{ new Visualisation };
-	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
+	std::shared_ptr<World> m_world = std::make_shared<World>();
 	//-------------------------------	
-	if (!m_visualisation->CreateSprite("Data\\planetBg.png", "Background"))
-	{
-		HAPI.UserMessage("Couldn't load the texture for the Background", "Warning");
-		return;
-	}
-	if (!m_visualisation->CreateSprite("Data\\dogstill1.png", "Player"))
-	{
-		HAPI.UserMessage("Couldn't load the texture for the Player", "Warning");
-		return;
-	}
-
-	while (HAPI.Update())
-	{
-		const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
-		m_visualisation->ClearToColour(HAPI_TColour::BLACK);
-		m_visualisation->DrawSprite("Background", backgroundPos.widthX, backgroundPos.heightY);
-		m_visualisation->DrawSprite("Background", backgroundPos.widthX - m_visualisation->GetScreenWidth(), backgroundPos.heightY);//left
-		m_visualisation->DrawSprite("Background", backgroundPos.widthX + m_visualisation->GetScreenWidth(), backgroundPos.heightY);//right
-		m_visualisation->DrawSprite("Player", playerPos.widthX, playerPos.heightY);
-
-		if (controllerData.isAttached)
-		{
-			if (keyboardData.scanCode['W'] || controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_Y] > 15000)
-			{
-				playerPos.heightY--;
-			}
-			if (keyboardData.scanCode['A'] || controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] < -15000)
-			{
-				playerPos.widthX--;
-				backgroundPos.widthX++;
-				if (backgroundPos.widthX == m_visualisation->GetScreenWidth()) { backgroundPos.widthX = 0; }
-			}
-			if (keyboardData.scanCode['S'] || controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_Y] < -15000)
-			{
-				playerPos.heightY++;
-			}
-			if (keyboardData.scanCode['D'] || controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] > 15000)
-			{
-				playerPos.widthX++;
-				backgroundPos.widthX--;
-				if (backgroundPos.widthX == -m_visualisation->GetScreenWidth()) { backgroundPos.widthX = 0; }
-			}
-		}
-
-		if (playerPos.widthX < 600 && playerPos.widthX > 500)
-		{
-			if (playerPos.heightY < 400 && playerPos.heightY > 300)
-
-			{
-				HAPI.SetControllerRumble(0, 20000, 20000);
-			}
-		}
-		else
-		{
-			HAPI.SetControllerRumble(0, 0, 0);
-		}
-	}
-	delete m_visualisation;
-	HAPI.SetControllerRumble(0, 0, 0);
+	m_world->LoadLevel();
+	//-------------------------------
+	m_world->Update();
 }
