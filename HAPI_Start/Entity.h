@@ -9,6 +9,8 @@ enum class ERole
 	EEnemy
 };
 
+class Visualisation;
+
 class Entity
 {
 protected:
@@ -22,7 +24,7 @@ protected:
 public:
 	Entity(const std::string& name) : gfxName(name) {};
 	virtual ~Entity() = default;
-	virtual void Update() = 0;
+	virtual void Update(const Visualisation& viz) = 0;
 
 };
 

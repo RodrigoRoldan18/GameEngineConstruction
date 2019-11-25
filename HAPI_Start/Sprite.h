@@ -17,8 +17,8 @@ public:
 	Sprite();
 	~Sprite();
 	bool Initialisation(const std::string& filename);
-	void ClipBlit(BYTE* dest, const Rectangle& destRect, int& posX, int& posY);
-	void Render(BYTE* dest, const int& screenWidth, const int& posX, const int& posY);
+	void ClipBlit(BYTE* dest, const Rectangle& destRect, const vector2<int>& position);
+	void Render(BYTE* dest, const int& screenWidth, const vector2<int>& position);
 
 	int GetSpriteX() const { return spriteSize.widthX; }
 	int GetSpriteY() const { return spriteSize.heightY; }

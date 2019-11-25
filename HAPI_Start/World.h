@@ -15,15 +15,12 @@ private:
 	std::shared_ptr<Visualisation> m_viz;
 	std::vector<Entity*> m_entities;
 
-	//these will be moved into Entity eventually
-	vector2<int> playerPos{ 0 , 100 };
-	vector2<int> backgroundPos{ 0, 0 };
 public:
-	World();
+	World() {};
 	~World();
+	bool Initialisation();
 	void Update();
-	void InputHandling();
-	void LoadLevel();
+	bool LoadLevel();
 
 };
 

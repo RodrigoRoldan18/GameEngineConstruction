@@ -26,7 +26,7 @@ public:
 	~Visualisation();
 	void ClearToColour(const HAPI_TColour& argColour);
 	bool CreateSprite(const std::string& filename, const std::string& name);
-	void DrawSprite(const std::string& name, int spriteX, int spriteY) const;
+	void DrawSprite(const std::string& name, const vector2<int>& position ) const;
 
 	int GetScreenWidth() const { return screenSize.widthX; }
 	int GetScreenHeight() const { return screenSize.heightY; }

@@ -24,38 +24,38 @@ bool Sprite::Initialisation(const std::string& filename)
 	return true;
 }
 
-void Sprite::ClipBlit(BYTE* dest, const Rectangle& destRect, int& posX, int& posY)
+void Sprite::ClipBlit(BYTE* dest, const Rectangle& destRect, const vector2<int>& position)
 {
-
+	vector2<int> tempPos = position;
 	//Create a new source rectangle without 
 	Rectangle tempClippedRect(sourceRect);
 	//Translato to screen space
-	tempClippedRect.Translate(posX, posY);
+	tempClippedRect.Translate(tempPos.widthX, tempPos.heightY);
 
 	if (tempClippedRect.CompletelyOutside(destRect))
 	{
 		return;
 	}
-	if (!tempClippedRect.CompletelyInside(destRect))
+	if (tempClippedRect.CompletelyInside(destRect))
 	{		
+		//Go to the other function for optimisation
+		Render(dest, destRect.Width(), position);
+		return;		
+	}
+	if(!tempClippedRect.CompletelyOutside(destRect) && !tempClippedRect.CompletelyInside(destRect))
+	{
 		//Clip against destination rectangle
 		tempClippedRect.ClippingTo(destRect);
 	}
-	else
-	{
-		//Go to the other function for optimisation
-		Render(dest, destRect.Width(), posX, posY);
-		return;
-	}
 	//Translate back into source space
-	tempClippedRect.Translate(-posX, -posY);
+	tempClippedRect.Translate(-tempPos.widthX, -tempPos.heightY);
 
 	//Clamping to negative
-	posX = std::max(posX, 0);
-	posY = std::max(posY, 0);			
+	tempPos.widthX = std::max(tempPos.widthX, 0);
+	tempPos.heightY = std::max(tempPos.heightY, 0);
 
 	//get the top left position of the screen
-	BYTE* destPnter = dest + (posX + posY * (size_t)destRect.Width()) * 4;	//gets the point in the destination where to start drawing
+	BYTE* destPnter = dest + (tempPos.widthX + tempPos.heightY * (size_t)destRect.Width()) * 4;	//gets the point in the destination where to start drawing
 	//Temporary pointer for the texture data
 	BYTE* sourcePnter = texture + (tempClippedRect.left + tempClippedRect.top * (size_t)sourceRect.Width()) * 4;	//gets the point where to start drawing the texture
 
@@ -92,10 +92,10 @@ void Sprite::ClipBlit(BYTE* dest, const Rectangle& destRect, int& posX, int& pos
 	}
 }
 
-void Sprite::Render(BYTE* dest, const int& screenWidth, const int& posX, const int& posY)
+void Sprite::Render(BYTE* dest, const int& screenWidth, const vector2<int>& position)
 {
 	//get the top left position of the screen
-	BYTE* screenPnter = dest + (posX + posY * (size_t)screenWidth) * 4;
+	BYTE* screenPnter = dest + (position.widthX + position.heightY * (size_t)screenWidth) * 4;
 	//Temporary pointer for the texture data
 	BYTE* texturePnter = texture;
 

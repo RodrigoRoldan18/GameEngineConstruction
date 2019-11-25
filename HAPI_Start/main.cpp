@@ -35,8 +35,11 @@ void HAPI_Main()
 {
 	//-------------------------------
 	std::shared_ptr<World> m_world = std::make_shared<World>();
-	//-------------------------------	
-	m_world->LoadLevel();
 	//-------------------------------
+	if (!m_world->Initialisation())
+	{
+		HAPI.UserMessage("There was a problem initialising the world", "Warning");
+		return;
+	}
 	m_world->Update();
 }
