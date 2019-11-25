@@ -1,14 +1,11 @@
 #include "Background.h"
 #include "Visualisation.h"
 
-
 void Background::Update(const Visualisation& viz)
 {
-	vector2<int> tempBgPos;
 	InputHandling(viz);
 	viz.DrawSprite(gfxName, position);
-	tempBgPos = { position.widthX - viz.GetScreenWidth(), position.heightY };
-	viz.DrawSprite(gfxName, tempBgPos);//extra
+	viz.DrawSprite(gfxName, extraBgPos);//extra
 }
 
 void Background::InputHandling(const Visualisation& viz)
@@ -20,12 +17,18 @@ void Background::InputHandling(const Visualisation& viz)
 		if (keyboardData.scanCode['A'] || controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] < -15000)
 		{
 			position.widthX++;
+			extraBgPos.widthX++;
 			if (position.widthX == viz.GetScreenWidth()) { position.widthX = 0; }
+			if (position.widthX > 0)
+				extraBgPos = { position.widthX - viz.GetScreenWidth(), position.heightY }; //left
 		}
 		if (keyboardData.scanCode['D'] || controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] > 15000)
 		{
 			position.widthX--;
+			extraBgPos.widthX--;
 			if (position.widthX == -viz.GetScreenWidth()) { position.widthX = 0; }
+			if(position.widthX < 0)
+				extraBgPos = { position.widthX + viz.GetScreenWidth(), position.heightY }; //right
 		}
 	}
 }

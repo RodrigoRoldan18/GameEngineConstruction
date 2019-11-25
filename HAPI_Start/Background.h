@@ -4,6 +4,7 @@
 class Background : public Entity
 {
 private:
+	vector2<int> extraBgPos;
 
 public:
 	Background(const std::string& name) : Entity(name) { role = ERole::ENeutral; }
