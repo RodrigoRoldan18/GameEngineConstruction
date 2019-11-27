@@ -42,7 +42,7 @@ bool World::LoadLevel()
 		HAPI.UserMessage("Couldn't load the texture for the Background", "Warning");
 		return false;
 	}
-	if (!m_viz->CreateSprite("Data\\playerSprite.tga", "Player"))
+	if (!m_viz->CreateSprite("Data\\dogstill.png", "Player"))
 	{
 		HAPI.UserMessage("Couldn't load the texture for the Player", "Warning");
 		return false;

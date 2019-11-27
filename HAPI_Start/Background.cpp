@@ -3,32 +3,53 @@
 
 void Background::Update(const Visualisation& viz)
 {
-	InputHandling(viz);
-	viz.DrawSprite(gfxName, position);
-	viz.DrawSprite(gfxName, extraBgPos);//extra
+	InputHandling();
+	Movement();
+	viz.DrawSprite(gfxName, position,0, frame);
+	viz.DrawSprite(gfxName, extraBgPos,0, frame);//extra
 }
 
-void Background::InputHandling(const Visualisation& viz)
+void Background::InputHandling()
 {
 	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
 	const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
+	if (keyboardData.scanCode['A'])
+	{
+		direction = EDirection::ERight;
+		extraBgPos.widthX++;
+		if (position.widthX == frame.Width()) { position.widthX = 0; }
+		if (position.widthX > 0)
+			extraBgPos = { position.widthX - frame.Width(), position.heightY };
+	}
+	else if (keyboardData.scanCode['D'])
+	{
+		direction = EDirection::ELeft;
+		extraBgPos.widthX--;
+		if (position.widthX == -frame.Width()) { position.widthX = 0; }
+		if (position.widthX < 0)
+			extraBgPos = { position.widthX + frame.Width(), position.heightY };
+	}
+	else
+	{
+		direction = EDirection::EStill;
+	}
 	if (controllerData.isAttached)
 	{
-		if (keyboardData.scanCode['A'] || controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] < -15000)
+		if (controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] < -15000)
 		{
-			position.widthX++;
+			direction = EDirection::ERight;
 			extraBgPos.widthX++;
-			if (position.widthX == viz.GetScreenWidth()) { position.widthX = 0; }
+			if (position.widthX == frame.Width()) { position.widthX = 0; }
 			if (position.widthX > 0)
-				extraBgPos = { position.widthX - viz.GetScreenWidth(), position.heightY }; //left
+				extraBgPos = { position.widthX - frame.Width(), position.heightY }; //left
 		}
-		if (keyboardData.scanCode['D'] || controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] > 15000)
+		if (controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] > 15000)
 		{
-			position.widthX--;
+			direction = EDirection::ELeft;
 			extraBgPos.widthX--;
-			if (position.widthX == -viz.GetScreenWidth()) { position.widthX = 0; }
+			if (position.widthX == -frame.Width()) { position.widthX = 0; }
 			if(position.widthX < 0)
-				extraBgPos = { position.widthX + viz.GetScreenWidth(), position.heightY }; //right
+				extraBgPos = { position.widthX + frame.Width(), position.heightY }; //right
 		}
 	}
 }

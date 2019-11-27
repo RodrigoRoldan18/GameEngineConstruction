@@ -42,12 +42,12 @@ bool Visualisation::CreateSprite(const std::string& filename, const std::string&
 	return true;
 }
 
-void Visualisation::DrawSprite(const std::string& name, const vector2<int>& position) const
+void Visualisation::DrawSprite(const std::string& name, const vector2<int>& position, int animationFrame, const Rectangle& argFrame) const
 {
 	if (!mapSprite.at(name))
 	{
 		HAPI.UserMessage("Can't draw the " + name, "Warning");
 		return;
 	}
-	mapSprite.at(name)->ClipBlit(screenPnter, bgRect, position);
+	mapSprite.at(name)->ClipBlit(screenPnter, bgRect, position, animationFrame, argFrame);
 }
