@@ -3,8 +3,6 @@
 
 void Player::Update(const Visualisation& viz)
 {
-	InputHandling();
-	Movement();
 	viz.DrawSprite(gfxName, position, currentAnimFrame, frame);
 	currentAnimFrame++;
 	if (currentAnimFrame == animationFrames) { currentAnimFrame = 0; }
@@ -53,4 +51,26 @@ void Player::InputHandling()
 			direction = EDirection::ERight;
 		}
 	}
+}
+
+bool Player::HasCollided(const std::vector<Entity*>& m_entities)
+{
+	for (auto& entity : m_entities)
+	{
+		if (entity->GetSide() == ERole::EEnemy)
+		{
+			if ((position.widthX * frame.right < entity->GetPosition().widthX * entity->GetFrame().left || position.widthX * frame.right > entity->GetPosition().widthX * entity->GetFrame().right)
+				|| (position.heightY * frame.bottom < entity->GetPosition().heightY * entity->GetFrame().top || position.heightY * frame.bottom > entity->GetPosition().heightY * entity->GetFrame().bottom))
+				return false;
+			else
+			{
+				HAPI.RenderText(10, 60, HAPI_TColour::YELLOW, "Player is colliding with something", 14, HAPI_TextStyle::eRegular);
+			}
+		}
+	}
+	return false;
+}
+
+void Player::TakeDamage()
+{
 }

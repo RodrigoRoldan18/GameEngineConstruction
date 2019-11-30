@@ -1,13 +1,11 @@
 #pragma once
 #include "Entity.h"
-
-class Background : public Entity
+class Enemy : public Entity
 {
 private:
-	vector2<int> extraBgPos;
 
 public:
-	Background(const std::string& name) : Entity(name) { role = ERole::ENeutral; frame = Rectangle(0, 1280, 0, 640); }
+	Enemy(const std::string& name) : Entity(name) { role = ERole::EEnemy; frame = Rectangle(0, 64, 0, 64); }
 	void Update(const Visualisation& viz) override final;
 	void InputHandling() override final;
 	bool HasCollided(const std::vector<Entity*>& m_entities) override final;

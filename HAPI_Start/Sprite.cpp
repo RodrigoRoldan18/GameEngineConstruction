@@ -33,10 +33,8 @@ void Sprite::ClipBlit(BYTE* dest, const Rectangle& destRect, const vector2<int>&
 	//Translato to screen space
 	tempClippedRect.Translate(tempPos.widthX, tempPos.heightY);
 
-	if (tempClippedRect.CompletelyOutside(destRect))
-	{
-		return;
-	}
+	if (tempClippedRect.CompletelyOutside(destRect)) { return; }
+	
 	if (tempClippedRect.CompletelyInside(destRect))
 	{		
 		//Go to the other function for optimisation

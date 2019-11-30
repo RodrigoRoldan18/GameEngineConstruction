@@ -3,8 +3,6 @@
 
 void Background::Update(const Visualisation& viz)
 {
-	InputHandling();
-	Movement();
 	viz.DrawSprite(gfxName, position,0, frame);
 	viz.DrawSprite(gfxName, extraBgPos,0, frame);//extra
 }
@@ -52,4 +50,13 @@ void Background::InputHandling()
 				extraBgPos = { position.widthX + frame.Width(), position.heightY }; //right
 		}
 	}
+}
+
+bool Background::HasCollided(const std::vector<Entity*>& m_entities)
+{
+	return false;
+}
+
+void Background::TakeDamage()
+{
 }

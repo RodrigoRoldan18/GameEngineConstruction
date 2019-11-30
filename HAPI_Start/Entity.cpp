@@ -1,5 +1,4 @@
 #include "Entity.h"
-#include "Visualisation.h"
 
 //void Entity::Render(const Visualisation& viz)
 //{
@@ -8,6 +7,7 @@
 
 void Entity::Movement()
 {
+	InputHandling();
 	switch (direction)
 	{
 	case EDirection::ELeft:

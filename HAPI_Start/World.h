@@ -14,6 +14,7 @@ class World
 private:
 	std::shared_ptr<Visualisation> m_viz;
 	std::vector<Entity*> m_entities;
+	bool isFinished{ false };
 
 public:
 	World() {};

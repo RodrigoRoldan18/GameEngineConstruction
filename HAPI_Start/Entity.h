@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include <string>
 #include "Vector2.h"
 #include "Rectangle.h"
@@ -33,7 +34,7 @@ protected:
 	int animationFrames{ 23 };
 	int currentAnimFrame{ 0 };
 	Rectangle frame;
-	EDirection direction;
+	EDirection direction{ EDirection::EStill };
 
 public:
 	Entity(const std::string& name) : gfxName(name) {};
@@ -41,7 +42,13 @@ public:
 	//void Render(const Visualisation& viz);
 	virtual void Update(const Visualisation& viz) = 0;
 	virtual void InputHandling() = 0;
+	virtual bool HasCollided(const std::vector<Entity*>& m_entities) = 0;
+	virtual void TakeDamage() = 0;
 	void Movement();
+
+	ERole GetSide() const { return role; }
+	Rectangle GetFrame() const { return frame; }
+	vector2<int> GetPosition() const { return position; }
 
 };
 
