@@ -35,6 +35,7 @@ void World::Update()
 			entity->Movement();
 			entity->Update(*m_viz);
 			entity->HasCollided(m_entities);
+
 		}
 	}
 }

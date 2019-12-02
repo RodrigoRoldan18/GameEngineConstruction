@@ -53,18 +53,30 @@ void Player::InputHandling()
 	}
 }
 
-bool Player::HasCollided(const std::vector<Entity*>& m_entities)
+bool Player::HasCollided(const std::vector<Entity*>& m_entities, const Visualisation& viz)
 {
 	for (auto& entity : m_entities)
 	{
 		if (entity->GetSide() == ERole::EEnemy)
 		{
-			if ((position.widthX * frame.right < entity->GetPosition().widthX * entity->GetFrame().left || position.widthX * frame.right > entity->GetPosition().widthX * entity->GetFrame().right)
-				|| (position.heightY * frame.bottom < entity->GetPosition().heightY * entity->GetFrame().top || position.heightY * frame.bottom > entity->GetPosition().heightY * entity->GetFrame().bottom))
+			if (position.widthX < entity->GetPosition().widthX - entity->GetFrame().Width() ||
+				position.heightY < entity->GetPosition().heightY - entity->GetFrame().Height() ||
+				position.widthX > entity->GetPosition().widthX + entity->GetFrame().Width() ||
+				position.heightY > entity->GetPosition().heightY + entity->GetFrame().Height())
 				return false;
 			else
 			{
 				HAPI.RenderText(10, 60, HAPI_TColour::YELLOW, "Player is colliding with something", 14, HAPI_TextStyle::eRegular);
+				//PixelPerfectCollision
+				//1. Create intersection rectangle
+				Rectangle intersection;
+				viz.PixelPerfectCollision(gfxName, position, entity->gfxName, entity->GetPosition());	//potentially move all collision to the sprite as it has the texture and rectangle
+				//2. Loop through each pixel inside the intersection rectangle
+				//3. compare to the offset of entity1 and 2
+				//4. if both alphas are true then collision!
+
+				//things to get: sprite for each
+
 			}
 		}
 	}

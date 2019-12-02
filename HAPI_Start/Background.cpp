@@ -52,7 +52,7 @@ void Background::InputHandling()
 	}
 }
 
-bool Background::HasCollided(const std::vector<Entity*>& m_entities)
+bool Background::HasCollided(const std::vector<Entity*>& m_entities, const Visualisation& viz)
 {
 	return false;
 }

@@ -42,7 +42,7 @@ public:
 	//void Render(const Visualisation& viz);
 	virtual void Update(const Visualisation& viz) = 0;
 	virtual void InputHandling() = 0;
-	virtual bool HasCollided(const std::vector<Entity*>& m_entities) = 0;
+	virtual bool HasCollided(const std::vector<Entity*>& m_entities, const Visualisation& viz) = 0;
 	virtual void TakeDamage() = 0;
 	void Movement();
 

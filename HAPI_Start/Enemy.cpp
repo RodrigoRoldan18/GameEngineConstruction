@@ -10,7 +10,7 @@ void Enemy::InputHandling()
 {
 }
 
-bool Enemy::HasCollided(const std::vector<Entity*>& m_entities)
+bool Enemy::HasCollided(const std::vector<Entity*>& m_entities, const Visualisation& viz)
 {
 	return false;
 }
