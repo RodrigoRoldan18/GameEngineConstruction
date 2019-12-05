@@ -15,6 +15,6 @@ bool Enemy::HasCollided(const std::vector<Entity*>& m_entities, const Visualisat
 	return false;
 }
 
-void Enemy::TakeDamage()
+void Enemy::TakeDamage(const int& argDamage)
 {
 }

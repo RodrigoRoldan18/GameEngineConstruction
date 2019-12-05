@@ -5,6 +5,8 @@
 
 class Visualisation;
 class Entity;
+enum class EDirection;
+enum class ERole;
 
 // HAPI itself is wrapped in the HAPISPACE namespace
 using namespace HAPISPACE;
@@ -22,6 +24,8 @@ public:
 	bool Initialisation();
 	void Update();
 	bool LoadLevel();
+	void PoolOfBulletsAndExplosions();
+	void Attack(const vector2<int>& argCasterPosition, const EDirection& argCasterDirection, const ERole& argCasterRole);
 
 };
 

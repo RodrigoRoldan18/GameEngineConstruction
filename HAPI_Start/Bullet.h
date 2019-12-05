@@ -1,12 +1,11 @@
 #pragma once
 #include "Entity.h"
+#include "Vector2.h"
 
-class Player : public Entity
+class Bullet : public Entity
 {
-private:
-
 public:
-	Player(const std::string& name) : Entity(name) { role = ERole::EPlayer; frame = Rectangle(0, 64, 0, 64);  }
+	Bullet(const std::string& name) : Entity(name) { frame = Rectangle(0, 32, 0, 32); isAlive = false; health = 1; }
 	void Update(const Visualisation& viz) override final;
 	void InputHandling() override final;
 	bool HasCollided(const std::vector<Entity*>& m_entities, const Visualisation& viz) override final;

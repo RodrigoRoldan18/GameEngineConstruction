@@ -57,6 +57,6 @@ bool Background::HasCollided(const std::vector<Entity*>& m_entities, const Visua
 	return false;
 }
 
-void Background::TakeDamage()
+void Background::TakeDamage(const int& argDamage)
 {
 }
