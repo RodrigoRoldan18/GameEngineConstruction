@@ -37,7 +37,11 @@ bool Visualisation::CreateSprite(const std::string& filename, const std::string&
 {
 	Sprite* newSprite = new Sprite();
 	if (!newSprite->Initialisation(filename))
+	{
+		delete newSprite;
 		return false;
+	}
+		
 	mapSprite[name] = newSprite;
 	return true;
 }

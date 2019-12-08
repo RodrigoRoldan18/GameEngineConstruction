@@ -31,20 +31,18 @@ void World::Update()
 {
 	while (HAPI.Update())
 	{		
+		//masterTime = HAPI.GetTime();
 		m_viz->ClearToColour(HAPI_TColour::BLACK);
-		for (auto& entity : m_entities)
+		for (Entity* entity : m_entities)
 		{
 			if (entity->CheckIfAlive())
 			{
-				entity->Movement();
-				if (!HAPI.GetTime() % (HAPISPACE::DWORD)100)
+				entity->Movement();				
+				if (entity->CheckIfAttacking())
 				{
-					if (entity->CheckIfAttacking())
-					{
-						Attack(entity->GetPosition(), entity->GetDirection(), entity->GetRole());
-						entity->SetAttack(false);
-					}
-				}				
+					Attack(entity->GetPosition(), entity->GetDirection(), entity->GetRole());
+					//entity->SetAttack(false);
+				}								
 				entity->Update(*m_viz);
 				entity->HasCollided(m_entities, *m_viz);
 			}
@@ -86,7 +84,7 @@ void World::PoolOfBulletsAndExplosions()
 	}
 }
 
-void World::Attack(const vector2<int>& argCasterPosition, const EDirection& argCasterDirection, const ERole& argCasterRole)
+void World::FireBullet(const vector2<int>& argCasterPosition, const EDirection& argCasterDirection, const ERole& argCasterRole)
 {
 	for (Entity* bullet : m_entities)
 	{
@@ -96,7 +94,7 @@ void World::Attack(const vector2<int>& argCasterPosition, const EDirection& argC
 			bullet->SetPosition(argCasterPosition);
 			bullet->SetDirection(argCasterDirection);
 			bullet->SetRole(argCasterRole);
-			break;
+			break;			
 		}
-	}
+	}	
 }

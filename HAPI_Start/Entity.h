@@ -53,13 +53,11 @@ public:
 	void SetRole(const ERole& argCasterRole) { role = argCasterRole; }
 	void SetAttack(const bool& argAttackStatus) { isAttacking = argAttackStatus; }
 
-
-	ERole GetSide() const { return role; }
 	Rectangle GetFrame() const { return frame; }
 	vector2<int> GetPosition() const { return position; }
 	int GetDamage() const { return damage; }
 	bool CheckIfAlive() const { return isAlive; }
-	std::string GetName() const { return gfxName; }
+	const std::string& GetName() const { return gfxName; }
 	bool CheckIfAttacking() const { return isAttacking; }
 	EDirection GetDirection() const { return direction; }
 	ERole GetRole() const { return role; }

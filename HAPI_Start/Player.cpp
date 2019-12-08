@@ -32,7 +32,7 @@ void Player::InputHandling()
 	{
 		direction = EDirection::EStill;
 	}
-	if (keyboardData.scanCode['E'])
+	if (keyboardData.scanCode['E'] && !isAttacking)
 	{
 		HAPI.RenderText(10, 90, HAPI_TColour::HORRID_PINK, "Player is FIRING", 14, HAPI_TextStyle::eRegular);
 		isAttacking = true;
@@ -55,7 +55,7 @@ void Player::InputHandling()
 		{
 			direction = EDirection::ERight;
 		}
-		if (controllerData.analogueButtons[HK_ANALOGUE_RIGHT_TRIGGER] > HK_GAMEPAD_TRIGGER_THRESHOLD)
+		if (controllerData.analogueButtons[HK_ANALOGUE_RIGHT_TRIGGER] > HK_GAMEPAD_TRIGGER_THRESHOLD && !isAttacking)
 		{
 			HAPI.RenderText(10, 90, HAPI_TColour::HORRID_PINK, "Player is FIRING", 14, HAPI_TextStyle::eRegular);
 			isAttacking = true;
@@ -67,7 +67,7 @@ bool Player::HasCollided(const std::vector<Entity*>& m_entities, const Visualisa
 {
 	for (auto& entity : m_entities)	//potentially move all collision to the sprite as it has the texture and rectangle.
 	{
-		if (entity->GetSide() == ERole::EEnemy)
+		if (entity->GetRole() == ERole::EEnemy)
 		{
 			if (position.widthX < entity->GetPosition().widthX - entity->GetFrame().Width() / 1.5 ||
 				position.heightY < entity->GetPosition().heightY - entity->GetFrame().Height() / 1.5||
