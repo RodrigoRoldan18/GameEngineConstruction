@@ -20,9 +20,12 @@ private:
 	Rectangle bgRect;
 
 	std::unordered_map<std::string, Sprite*> mapSprite;
+	static Visualisation* instance;
+
+	Visualisation();
 
 public:
-	Visualisation();
+	static Visualisation& GetInstance();
 	~Visualisation();
 	void ClearToColour(const HAPI_TColour& argColour);
 	bool CreateSprite(const std::string& filename, const std::string& name);
@@ -31,3 +34,5 @@ public:
 	int GetScreenWidth() const { return screenSize.widthX; }
 	int GetScreenHeight() const { return screenSize.heightY; }
 };
+
+#define VIZ Visualisation::GetInstance()

@@ -1,6 +1,17 @@
 #include "Visualisation.h"
 #include "Sprite.h"
 
+Visualisation* Visualisation::instance{ nullptr };
+
+Visualisation& Visualisation::GetInstance()
+{
+	if (instance == nullptr)
+	{
+		instance = new Visualisation();
+	}
+	return *instance;
+}
+
 Visualisation::Visualisation()
 {
 	screenSize.widthX = 1280;//1024
@@ -21,6 +32,7 @@ Visualisation::~Visualisation()
 	{
 		delete sprite.second;
 	}
+	delete instance;
 }
 
 void Visualisation::ClearToColour(const HAPI_TColour& argColour)

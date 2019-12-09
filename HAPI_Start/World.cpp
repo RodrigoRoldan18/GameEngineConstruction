@@ -6,6 +6,17 @@
 #include "Bullet.h"
 #include "Entity.h"
 
+World* World::instance{ nullptr };
+
+World& World::GetInstance()
+{
+	if (instance == nullptr)
+	{
+		instance = new World();
+	}
+	return *instance;
+}
+
 World::~World()
 {
 	for (auto& entity : m_entities)
@@ -17,7 +28,6 @@ World::~World()
 bool World::Initialisation()
 {
 	HAPI.SetShowFPS(true);
-	m_viz = std::make_shared<Visualisation>();
 	m_entities.push_back(new Background("Background"));
 	m_entities.push_back(new Player("Player"));
 	m_entities.push_back(new Enemy("Enemy"));
@@ -31,20 +41,14 @@ void World::Update()
 {
 	while (HAPI.Update())
 	{		
-		//masterTime = HAPI.GetTime();
-		m_viz->ClearToColour(HAPI_TColour::BLACK);
+		VIZ.ClearToColour(HAPI_TColour::BLACK);
 		for (Entity* entity : m_entities)
 		{
 			if (entity->CheckIfAlive())
 			{
-				entity->Movement();				
-				if (entity->CheckIfAttacking())
-				{
-					Attack(entity->GetPosition(), entity->GetDirection(), entity->GetRole());
-					//entity->SetAttack(false);
-				}								
-				entity->Update(*m_viz);
-				entity->HasCollided(m_entities, *m_viz);
+				entity->Movement();					
+				entity->Update();
+				entity->HasCollided(m_entities);
 			}
 		}
 	}
@@ -52,22 +56,22 @@ void World::Update()
 
 bool World::LoadLevel()
 {
-	if (!m_viz->CreateSprite("Data\\planetBg.png", "Background"))
+	if (!VIZ.CreateSprite("Data\\planetBg.png", "Background"))
 	{
 		HAPI.UserMessage("Couldn't load the texture for the Background", "Warning");
 		return false;
 	}
-	if (!m_viz->CreateSprite("Data\\dogstill.png", "Player"))
+	if (!VIZ.CreateSprite("Data\\dogstill.png", "Player"))
 	{
 		HAPI.UserMessage("Couldn't load the texture for the Player", "Warning");
 		return false;
 	}
-	if (!m_viz->CreateSprite("Data\\playerSprite.tga", "Enemy"))
+	if (!VIZ.CreateSprite("Data\\playerSprite.tga", "Enemy"))
 	{
 		HAPI.UserMessage("Couldn't load the texture for the Enemy", "Warning");
 		return false;
 	}
-	if (!m_viz->CreateSprite("Data\\energyBall.png", "Bullet"))
+	if (!VIZ.CreateSprite("Data\\energyBall.png", "Bullet"))
 	{
 		HAPI.UserMessage("Couldn't load the texture for the Bullet", "Warning");
 		return false;
@@ -90,6 +94,7 @@ void World::FireBullet(const vector2<int>& argCasterPosition, const EDirection& 
 	{
 		if (!bullet->CheckIfAlive() && bullet->GetName() == "Bullet")
 		{
+			//this can be done in an initialise function
 			bullet->SetAliveStatus(true);
 			bullet->SetPosition(argCasterPosition);
 			bullet->SetDirection(argCasterDirection);

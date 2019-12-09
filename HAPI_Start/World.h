@@ -16,18 +16,19 @@ class World
 private:
 	enum EState
 	{
-		EGame,
 		EMenu,
+		EGame,
 		EGameOver
 	};
-	EState m_gameState;
-	std::shared_ptr<Visualisation> m_viz;
+	EState m_gameState{EState::EGame};
 	std::vector<Entity*> m_entities;
 	bool isFinished{ false };
-	double masterTime{ 0 };
 
-public:
+	static World* instance;
 	World() {};
+
+public:	
+	static World& GetInstance();
 	~World();
 	bool Initialisation();
 	void Update();
@@ -36,4 +37,6 @@ public:
 	void FireBullet(const vector2<int>& argCasterPosition, const EDirection& argCasterDirection, const ERole& argCasterRole);
 
 };
+
+#define WORLD World::GetInstance()
 

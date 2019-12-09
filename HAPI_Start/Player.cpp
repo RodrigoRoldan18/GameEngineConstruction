@@ -1,69 +1,61 @@
 #include "Player.h"
 #include "Visualisation.h"
+#include "World.h"
 
-void Player::Update(const Visualisation& viz)
+void Player::Update()
 {
-	viz.DrawSprite(gfxName, position, currentAnimFrame, frame);
+	VIZ.DrawSprite(gfxName, position, currentAnimFrame, frame);
 	currentAnimFrame++;
 	if (currentAnimFrame == animationFrames) { currentAnimFrame = 0; }
+	if (firingCooldown > 0) { firingCooldown--; }
 }
 
 void Player::InputHandling()
 {
+	EDirection tempDirection = direction;
 	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
 	const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
 	if (keyboardData.scanCode['W'])
-	{
-		direction = EDirection::EUp;
-	}
+		tempDirection = EDirection::EUp;
 	else if (keyboardData.scanCode['A'])
-	{
-		direction = EDirection::ELeft;
-	}
+		tempDirection = EDirection::ELeft;
 	else if (keyboardData.scanCode['S'])
-	{
-		direction = EDirection::EDown;
-	}
+		tempDirection = EDirection::EDown;
 	else if (keyboardData.scanCode['D'])
-	{
-		direction = EDirection::ERight;
-	}
+		tempDirection = EDirection::ERight;
 	else
+		tempDirection = EDirection::EStill;
+	if (keyboardData.scanCode['E'] && firingCooldown == 0)
 	{
-		direction = EDirection::EStill;
-	}
-	if (keyboardData.scanCode['E'] && !isAttacking)
-	{
-		HAPI.RenderText(10, 90, HAPI_TColour::HORRID_PINK, "Player is FIRING", 14, HAPI_TextStyle::eRegular);
-		isAttacking = true;
+		if (direction == EDirection::EStill) { WORLD.FireBullet(position, previousDir, role); }
+		else { WORLD.FireBullet(position, direction, role); }
+		firingCooldown = 20;
 	}
 	if (controllerData.isAttached)
 	{
 		if (controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_Y] > HK_GAMEPAD_LEFT_THUMB_DEADZONE)
-		{
-			direction = EDirection::EUp;
-		}
+			tempDirection = EDirection::EUp;
 		else if (controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] < -HK_GAMEPAD_LEFT_THUMB_DEADZONE)
-		{
-			direction = EDirection::ELeft;
-		}
+			tempDirection = EDirection::ELeft;
 		else if (controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_Y] < -HK_GAMEPAD_LEFT_THUMB_DEADZONE)
-		{
-			direction = EDirection::EDown;
-		}
+			tempDirection = EDirection::EDown;
 		else if (controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] > HK_GAMEPAD_LEFT_THUMB_DEADZONE)
+			tempDirection = EDirection::ERight;
+		if (controllerData.analogueButtons[HK_ANALOGUE_RIGHT_TRIGGER] > HK_GAMEPAD_TRIGGER_THRESHOLD && firingCooldown == 0)
 		{
-			direction = EDirection::ERight;
+			if (direction == EDirection::EStill) { WORLD.FireBullet(position, previousDir, role); }
+			else { WORLD.FireBullet(position, direction, role); }
+			firingCooldown = 20;
 		}
-		if (controllerData.analogueButtons[HK_ANALOGUE_RIGHT_TRIGGER] > HK_GAMEPAD_TRIGGER_THRESHOLD && !isAttacking)
-		{
-			HAPI.RenderText(10, 90, HAPI_TColour::HORRID_PINK, "Player is FIRING", 14, HAPI_TextStyle::eRegular);
-			isAttacking = true;
-		}
+	}
+	if (tempDirection != direction)
+	{
+		previousDir = direction;
+		direction = tempDirection;
 	}
 }
 
-bool Player::HasCollided(const std::vector<Entity*>& m_entities, const Visualisation& viz)
+bool Player::HasCollided(const std::vector<Entity*>& m_entities)
 {
 	for (auto& entity : m_entities)	//potentially move all collision to the sprite as it has the texture and rectangle.
 	{

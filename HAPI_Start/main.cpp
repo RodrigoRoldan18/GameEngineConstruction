@@ -33,13 +33,10 @@ using namespace HAPISPACE;
 
 void HAPI_Main()
 {
-	//-------------------------------
-	std::shared_ptr<World> m_world = std::make_shared<World>();
-	//-------------------------------
-	if (!m_world->Initialisation())
+	if (!WORLD.Initialisation())
 	{
 		HAPI.UserMessage("There was a problem initialising the world", "Warning");
 		return;
 	}
-	m_world->Update();
+	WORLD.Update();
 }

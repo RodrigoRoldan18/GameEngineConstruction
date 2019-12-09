@@ -1,18 +1,18 @@
 #include "Bullet.h"
 #include "Visualisation.h"
 
-void Bullet::Update(const Visualisation& viz)
+void Bullet::Update()
 {
-	viz.DrawSprite(gfxName, position, currentAnimFrame, frame);
+	VIZ.DrawSprite(gfxName, position, currentAnimFrame, frame);
 }
 
 void Bullet::InputHandling()
 {
 }
 
-bool Bullet::HasCollided(const std::vector<Entity*>& m_entities, const Visualisation& viz)
+bool Bullet::HasCollided(const std::vector<Entity*>& m_entities)
 {
-	if (position.widthX < -frame.Width() || position.heightY < -frame.Width() || position.widthX > viz.GetScreenWidth() + frame.Width() || position.heightY > viz.GetScreenHeight() + frame.Height())
+	if (position.widthX < -frame.Width() || position.heightY < -frame.Width() || position.widthX > VIZ.GetScreenWidth() + frame.Width() || position.heightY > VIZ.GetScreenHeight() + frame.Height())
 	{
 		isAlive = false;
 		return true;

@@ -1,10 +1,10 @@
 #include "Background.h"
 #include "Visualisation.h"
 
-void Background::Update(const Visualisation& viz)
+void Background::Update()
 {
-	viz.DrawSprite(gfxName, position,0, frame);
-	viz.DrawSprite(gfxName, extraBgPos,0, frame);//extra
+	VIZ.DrawSprite(gfxName, position,0, frame);
+	VIZ.DrawSprite(gfxName, extraBgPos,0, frame);//extra
 }
 
 void Background::InputHandling()
@@ -24,7 +24,7 @@ void Background::InputHandling()
 		direction = EDirection::ELeft;
 		extraBgPos.widthX--;
 		if (position.widthX == -frame.Width()) { position.widthX = 0; }
-		if (position.widthX < 0)
+		if (position.widthX <= 0)
 			extraBgPos = { position.widthX + frame.Width(), position.heightY };
 	}
 	else
@@ -38,7 +38,7 @@ void Background::InputHandling()
 			direction = EDirection::ERight;
 			extraBgPos.widthX++;
 			if (position.widthX == frame.Width()) { position.widthX = 0; }
-			if (position.widthX > 0)
+			if (position.widthX >= 0)
 				extraBgPos = { position.widthX - frame.Width(), position.heightY }; //left
 		}
 		if (controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] > 15000)
@@ -52,7 +52,7 @@ void Background::InputHandling()
 	}
 }
 
-bool Background::HasCollided(const std::vector<Entity*>& m_entities, const Visualisation& viz)
+bool Background::HasCollided(const std::vector<Entity*>& m_entities)
 {
 	return false;
 }
