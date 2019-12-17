@@ -1,9 +1,11 @@
 #include "Entity.h"
 
-//void Entity::Render(const Visualisation& viz)
-//{
-//	viz.DrawSprite(spritena)
-//}
+void Entity::TakeDamage(const int& argDamage)
+{
+	health -= argDamage;
+	if (health <= 0)
+		isAlive = false;
+}
 
 void Entity::Movement()
 {
@@ -11,16 +13,16 @@ void Entity::Movement()
 	switch (direction)
 	{
 	case EDirection::ELeft:
-		position.widthX--;
+		position.widthX -= speed;
 		break;
 	case EDirection::ERight:
-		position.widthX++;
+		position.widthX += speed;
 		break;
 	case EDirection::EUp:
-		position.heightY--;
+		position.heightY -= speed;
 		break;
 	case EDirection::EDown:
-		position.heightY++;
+		position.heightY += speed;
 		break;
 	case EDirection::EStill:
 		break;

@@ -1,6 +1,12 @@
 #include "Background.h"
 #include "Visualisation.h"
 
+Background::Background(const std::string& name) : Entity(name) 
+{
+	frame = Rectangle(0, 1280, 0, 640); 
+	speed = 1;
+}
+
 void Background::Update()
 {
 	VIZ.DrawSprite(gfxName, position,0, frame);
@@ -52,11 +58,7 @@ void Background::InputHandling()
 	}
 }
 
-bool Background::HasCollided(const std::vector<Entity*>& m_entities)
+bool Background::HasCollided(const Entity& entity)
 {
 	return false;
-}
-
-void Background::TakeDamage(const int& argDamage)
-{
 }

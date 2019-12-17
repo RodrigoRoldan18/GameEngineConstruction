@@ -48,7 +48,14 @@ void World::Update()
 			{
 				entity->Movement();					
 				entity->Update();
-				entity->HasCollided(m_entities);
+				for (Entity* collider : m_entities)
+				{
+					if (collider->CheckIfAlive())
+					{
+						if (entity->HasCollided(*collider))
+							entity->TakeDamage(collider->GetDamage());
+					}
+				}
 			}
 		}
 	}

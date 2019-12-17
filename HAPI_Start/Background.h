@@ -4,13 +4,12 @@
 class Background : public Entity
 {
 private:
-	vector2<int> extraBgPos;
+	vector2<int> extraBgPos = position;
 
 public:
-	Background(const std::string& name) : Entity(name) {frame = Rectangle(0, 1280, 0, 640); }
+	Background(const std::string& name);
 	void Update() override final;
 	void InputHandling() override final;
-	bool HasCollided(const std::vector<Entity*>& m_entities) override final;
-	void TakeDamage(const int& argDamage) override final;
+	bool HasCollided(const Entity& entity) override final;
 };
 

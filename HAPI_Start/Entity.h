@@ -28,6 +28,7 @@ protected:
 	vector2<int> position{0,0};
 	int health{100};
 	int damage{10};
+	int speed{ 2 };
 	std::string gfxName;
 	ERole role{ERole::ENeutral};
 	bool isAlive{ true };
@@ -42,8 +43,8 @@ public:
 	//void Render(const Visualisation& viz);
 	virtual void Update() = 0;
 	virtual void InputHandling() = 0;
-	virtual bool HasCollided(const std::vector<Entity*>& m_entities) = 0;
-	virtual void TakeDamage(const int& argDamage) = 0;
+	virtual bool HasCollided(const Entity& entity) = 0;
+	void TakeDamage(const int& argDamage);
 	void Movement();
 
 	void SetAliveStatus(const bool& argAliveStatus) { isAlive = argAliveStatus; }

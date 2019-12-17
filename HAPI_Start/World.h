@@ -20,6 +20,7 @@ private:
 		EGame,
 		EGameOver
 	};
+
 	EState m_gameState{EState::EGame};
 	std::vector<Entity*> m_entities;
 	bool isFinished{ false };
