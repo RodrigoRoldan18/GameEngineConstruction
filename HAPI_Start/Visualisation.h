@@ -6,11 +6,10 @@
 #include <HAPI_lib.h>
 #include "Rectangle.h"
 #include "Vector2.h"
+#include "Sprite.h"
 
 // HAPI itself is wrapped in the HAPISPACE namespace
 using namespace HAPISPACE;
-
-class Sprite;
 
 class Visualisation
 {
@@ -33,6 +32,7 @@ public:
 
 	int GetScreenWidth() const { return screenSize.widthX; }
 	int GetScreenHeight() const { return screenSize.heightY; }
+	Rectangle GetRect(const std::string& spriteName) const { return mapSprite.at(spriteName)->GetRect(); }
 };
 
 #define VIZ Visualisation::GetInstance()

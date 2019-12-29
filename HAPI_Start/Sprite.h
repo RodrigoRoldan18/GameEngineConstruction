@@ -22,4 +22,5 @@ public:
 
 	int GetSpriteX() const { return spriteSize.widthX; }
 	int GetSpriteY() const { return spriteSize.heightY; }
+	Rectangle GetRect() const { return sourceRect; }
 };

@@ -8,9 +8,10 @@ Enemy::Enemy(const std::string& name) : Entity(name)
 	direction = EDirection::ERight;
 }
 
-void Enemy::Update()
+void Enemy::Update(const float s)
 {
 	VIZ.DrawSprite(gfxName, position, currentAnimFrame, frame);
+	HAPI.RenderText(10, 60, HAPI_TColour::YELLOW, std::to_string(health), 14, HAPI_TextStyle::eRegular);
 }
 
 void Enemy::InputHandling()
@@ -19,22 +20,4 @@ void Enemy::InputHandling()
 		direction = EDirection::ERight;
 	else if (position.widthX > VIZ.GetScreenWidth() - (frame.Width() / 2) && direction == EDirection::ERight)
 		direction = EDirection::ELeft;
-}
-
-bool Enemy::HasCollided(const Entity& entity)
-{
-	if (entity.GetRole() == ERole::EPlayer)
-	{
-		if (position.widthX < entity.GetPosition().widthX - entity.GetFrame().Width() / 1.5 ||
-			position.heightY < entity.GetPosition().heightY - entity.GetFrame().Height() / 1.5 ||
-			position.widthX > entity.GetPosition().widthX + entity.GetFrame().Width() / 1.5 ||
-			position.heightY > entity.GetPosition().heightY + entity.GetFrame().Height() / 1.5)
-			return false;
-		else
-		{
-			HAPI.RenderText(10, 80, HAPI_TColour::RED, "Enemy is colliding with something", 14, HAPI_TextStyle::eRegular);
-			return true;
-		}
-	}
-	return false;
 }

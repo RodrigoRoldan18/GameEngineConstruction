@@ -6,6 +6,8 @@
 #include "Bullet.h"
 #include "Entity.h"
 
+#include <cassert>
+
 World* World::instance{ nullptr };
 
 World& World::GetInstance()
@@ -37,33 +39,46 @@ bool World::Initialisation()
 	return true;
 }
 
+constexpr DWORD kTickTime{ 50 };
+
 void World::Update()
 {
+	DWORD lastTimeTicked{ 0 };
 	while (HAPI.Update())
 	{		
+		DWORD timeSinceLastTick{ HAPI.GetTime() - lastTimeTicked };
+		if (timeSinceLastTick >= kTickTime)
+		{
+			for (Entity* entity : m_entities)
+			{
+				if (entity->CheckIfAlive())				
+					entity->Movement();				
+			}
+			lastTimeTicked = HAPI.GetTime();
+			for (size_t i = 0; i < m_entities.size(); i++)
+			{
+				for (size_t j = i + 1; j < m_entities.size(); j++)
+				{					
+					m_entities[i]->CheckCollision(*m_entities[j]);
+				}
+			}
+			timeSinceLastTick = 0;
+		}
+		float s = timeSinceLastTick / (float)kTickTime;
+		assert(s >= 0 && s <= 1.0f);
+
 		VIZ.ClearToColour(HAPI_TColour::BLACK);
 		for (Entity* entity : m_entities)
 		{
 			if (entity->CheckIfAlive())
-			{
-				entity->Movement();					
-				entity->Update();
-				for (Entity* collider : m_entities)
-				{
-					if (collider->CheckIfAlive())
-					{
-						if (entity->HasCollided(*collider))
-							entity->TakeDamage(collider->GetDamage());
-					}
-				}
-			}
+				entity->Update(s);
 		}
 	}
 }
 
 bool World::LoadLevel()
 {
-	if (!VIZ.CreateSprite("Data\\planetBg.png", "Background"))
+	if (!VIZ.CreateSprite("Data\\square_bg.jfif", "Background"))
 	{
 		HAPI.UserMessage("Couldn't load the texture for the Background", "Warning");
 		return false;

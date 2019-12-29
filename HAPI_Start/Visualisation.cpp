@@ -1,5 +1,4 @@
 #include "Visualisation.h"
-#include "Sprite.h"
 
 Visualisation* Visualisation::instance{ nullptr };
 
@@ -14,8 +13,8 @@ Visualisation& Visualisation::GetInstance()
 
 Visualisation::Visualisation()
 {
-	screenSize.widthX = 1280;//1024
-	screenSize.heightY = 768;
+	screenSize.widthX = 950;//1240
+	screenSize.heightY = 768;//768
 	if (!HAPI.Initialise(screenSize.widthX, screenSize.heightY, "Games Engine Construction ICA - V8008106"))
 		return;	
 	screenPnter = HAPI.GetScreenPointer();

@@ -25,10 +25,11 @@ class Visualisation;
 class Entity
 {
 protected:
-	vector2<int> position{0,0};
+	vector2<int> position{ 0,0 };
+	vector2<int> oldPos{ 0,0 };
 	int health{100};
 	int damage{10};
-	int speed{ 2 };
+	int speed{ 1 };
 	std::string gfxName;
 	ERole role{ERole::ENeutral};
 	bool isAlive{ true };
@@ -40,15 +41,17 @@ protected:
 public:
 	Entity(const std::string& name) : gfxName(name) {};
 	virtual ~Entity() = default;
-	//void Render(const Visualisation& viz);
-	virtual void Update() = 0;
+
+	virtual void Update(const float s) = 0;
 	virtual void InputHandling() = 0;
-	virtual bool HasCollided(const Entity& entity) = 0;
+
+	void CheckCollision(Entity& other);
+	bool CanCollideWith(const ERole& role, const ERole& other);
 	void TakeDamage(const int& argDamage);
 	void Movement();
 
 	void SetAliveStatus(const bool& argAliveStatus) { isAlive = argAliveStatus; }
-	void SetPosition(const vector2<int>& argCasterPosition) { position = argCasterPosition; }
+	void SetPosition(const vector2<int>& argCasterPosition) { oldPos = position; position = argCasterPosition; }
 	void SetDirection(const EDirection& argCasterDirection) { direction = argCasterDirection; }
 	void SetRole(const ERole& argCasterRole) { role = argCasterRole; }
 

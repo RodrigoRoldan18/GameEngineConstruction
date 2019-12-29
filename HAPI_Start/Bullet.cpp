@@ -9,8 +9,13 @@ Bullet::Bullet(const std::string& name) : Entity(name)
 	speed = 10;
 }
 
-void Bullet::Update()
+void Bullet::Update(const float s)
 {
+	if (position.widthX < -frame.Width() || position.heightY < -frame.Width() || position.widthX > VIZ.GetScreenWidth() + frame.Width() || position.heightY > VIZ.GetScreenHeight() + frame.Height())
+	{
+		isAlive = false;
+		return;
+	}
 	VIZ.DrawSprite(gfxName, position, currentAnimFrame, frame);
 }
 
@@ -29,44 +34,5 @@ void Bullet::InputHandling()
 
 		else if (controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] > HK_GAMEPAD_LEFT_THUMB_DEADZONE)
 			position.widthX--;
-	}
-}
-
-bool Bullet::HasCollided(const Entity& entity)
-{
-	if (position.widthX < -frame.Width() || position.heightY < -frame.Width() || position.widthX > VIZ.GetScreenWidth() + frame.Width() || position.heightY > VIZ.GetScreenHeight() + frame.Height())
-	{
-		isAlive = false;
-		return true;
-	}
-	else
-	{
-		if (role == ERole::EPlayer)
-		{
-			if (entity.GetRole() == ERole::EEnemy)
-			{
-				if (position.widthX < entity.GetPosition().widthX - entity.GetFrame().Width() / 1.5 ||
-					position.heightY < entity.GetPosition().heightY - entity.GetFrame().Height() / 1.5 ||
-					position.widthX > entity.GetPosition().widthX + entity.GetFrame().Width() / 1.5 ||
-					position.heightY > entity.GetPosition().heightY + entity.GetFrame().Height() / 1.5)
-					return false;
-				else				
-					return true;				
-			}
-		}
-		else if (role == ERole::EEnemy)
-		{
-			if (entity.GetRole() == ERole::EPlayer)
-			{
-				if (position.widthX < entity.GetPosition().widthX - entity.GetFrame().Width() / 1.5 ||
-					position.heightY < entity.GetPosition().heightY - entity.GetFrame().Height() / 1.5 ||
-					position.widthX > entity.GetPosition().widthX + entity.GetFrame().Width() / 1.5 ||
-					position.heightY > entity.GetPosition().heightY + entity.GetFrame().Height() / 1.5)
-					return false;
-				else				
-					return true;				
-			}
-		}
-		return false;
 	}
 }

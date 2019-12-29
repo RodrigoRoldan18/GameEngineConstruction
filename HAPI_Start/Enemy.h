@@ -7,8 +7,7 @@ private:
 
 public:
 	Enemy(const std::string& name);
-	void Update() override final;
+	void Update(const float s) override final;
 	void InputHandling() override final;
-	bool HasCollided(const Entity& entity) override final;
 };
 

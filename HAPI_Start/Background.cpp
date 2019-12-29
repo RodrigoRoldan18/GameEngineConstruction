@@ -3,11 +3,11 @@
 
 Background::Background(const std::string& name) : Entity(name) 
 {
-	frame = Rectangle(0, 1280, 0, 640); 
-	speed = 1;
+	frame = Rectangle(0, 960, 0, 960);
+	speed = 4;
 }
 
-void Background::Update()
+void Background::Update(const float s)
 {
 	VIZ.DrawSprite(gfxName, position,0, frame);
 	VIZ.DrawSprite(gfxName, extraBgPos,0, frame);//extra
@@ -20,18 +20,18 @@ void Background::InputHandling()
 	if (keyboardData.scanCode['A'])
 	{
 		direction = EDirection::ERight;
-		extraBgPos.widthX++;
+		extraBgPos.widthX+=speed;
 		if (position.widthX == frame.Width()) { position.widthX = 0; }
-		if (position.widthX > 0)
-			extraBgPos = { position.widthX - frame.Width(), position.heightY };
+		if (position.widthX >= 0)
+			extraBgPos = { position.widthX - VIZ.GetScreenWidth() , position.heightY };
 	}
 	else if (keyboardData.scanCode['D'])
 	{
 		direction = EDirection::ELeft;
-		extraBgPos.widthX--;
+		extraBgPos.widthX-=speed;
 		if (position.widthX == -frame.Width()) { position.widthX = 0; }
 		if (position.widthX <= 0)
-			extraBgPos = { position.widthX + frame.Width(), position.heightY };
+			extraBgPos = { position.widthX + VIZ.GetScreenWidth(), position.heightY };
 	}
 	else
 	{
@@ -56,9 +56,4 @@ void Background::InputHandling()
 				extraBgPos = { position.widthX + frame.Width(), position.heightY }; //right
 		}
 	}
-}
-
-bool Background::HasCollided(const Entity& entity)
-{
-	return false;
 }
