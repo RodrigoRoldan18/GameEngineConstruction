@@ -1,23 +1,113 @@
 #include "Enemy.h"
 #include "Visualisation.h"
+#include "World.h"
+#include <time.h>
 
 Enemy::Enemy(const std::string& name) : Entity(name)
 { 
+	//TODO: have random positions depending on AI type, if tracker, place anywhere on the right of the screen, otherwise place on the right of the screen at the top
+	srand(time(0));
+	if (rand() % 2 == 0)
+		AI = EType::EPatroller;
+	else
+		AI = EType::ETracker;
+
 	role = ERole::EEnemy;
 	frame = Rectangle(0, 64, 0, 64); 
 	direction = EDirection::ERight;
+	SetPosition(vector2<int>(100, 100));
 }
 
 void Enemy::Update(const float s)
 {
-	VIZ.DrawSprite(gfxName, position, currentAnimFrame, frame);
-	HAPI.RenderText(10, 60, HAPI_TColour::YELLOW, std::to_string(health), 14, HAPI_TextStyle::eRegular);
+	Render(s);
+	if (firingCooldown > 0) { firingCooldown--; }
 }
 
 void Enemy::InputHandling()
 {
-	if (position.widthX < -frame.Width() / 2 && direction == EDirection::ELeft)
-		direction = EDirection::ERight;
-	else if (position.widthX > VIZ.GetScreenWidth() - (frame.Width() / 2) && direction == EDirection::ERight)
-		direction = EDirection::ELeft;
+	vector2<int> tempPos = GetPosition();
+
+	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
+	const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
+
+	if (WORLD.isBgMoving())
+	{
+		if (keyboardData.scanCode['A'])
+		{
+			tempPos.widthX += speed * 2;
+		}
+		else if (keyboardData.scanCode['D'])
+		{			
+			tempPos.widthX -= speed * 2;
+		}
+		if (controllerData.isAttached)
+		{
+			if (controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] < -HK_GAMEPAD_LEFT_THUMB_DEADZONE)
+			{
+				tempPos.widthX += speed * 2;
+			}
+			if (controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] > HK_GAMEPAD_LEFT_THUMB_DEADZONE)
+			{
+				tempPos.widthX -= speed * 2;
+			}
+		}
+		SetPosition(tempPos);
+	}	
+}
+
+void Enemy::MoveTowardsPlayer(const std::vector<Entity*>& entityVector)
+{
+	vector2<int> tempThisPos = GetPosition();
+
+	switch (AI)
+	{
+	case Enemy::EType::ETracker:
+		vector2<int> tempPlayerPos;
+		for (Entity* object : entityVector)
+		{
+			if (object->CheckIfAlive() && object->GetRole() == ERole::EPlayer)
+			{
+				//object is the player
+				tempPlayerPos = object->GetPosition();
+				break;
+			}
+		}
+		vector2<int> distance = tempThisPos - tempPlayerPos;
+		if (distance.widthX < 0) { distance.widthX = -distance.widthX; }
+		if (distance.heightY < 0) { distance.heightY = -distance.heightY; }
+		if (distance.widthX > distance.heightY)
+		{
+			if (tempPlayerPos.widthX > tempThisPos.widthX)
+				direction = EDirection::ERight;
+			else
+				direction = EDirection::ELeft;
+		}
+		else
+		{
+			if (tempPlayerPos.heightY > tempThisPos.heightY)
+				direction = EDirection::EDown;
+			else
+				direction = EDirection::EUp;
+		}
+		if (firingCooldown == 0)
+		{
+			WORLD.FireBullet(tempThisPos, direction, role);
+			firingCooldown = 50;
+		}
+		break;
+	case Enemy::EType::EPatroller:
+		if (tempThisPos.widthX < -frame.Width() / 2 && direction == EDirection::ELeft)
+			direction = EDirection::ERight;
+		else if (tempThisPos.widthX > VIZ.GetScreenWidth() - (frame.Width() / 2) && direction == EDirection::ERight)
+			direction = EDirection::ELeft;
+		if (firingCooldown == 0)
+		{
+			WORLD.FireBullet(tempThisPos, EDirection::EDown, role);
+			firingCooldown = 50;
+		}
+		break;
+	default:
+		break;
+	}
 }

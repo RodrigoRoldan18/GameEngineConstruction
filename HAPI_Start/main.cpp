@@ -38,5 +38,8 @@ void HAPI_Main()
 		HAPI.UserMessage("There was a problem initialising the world", "Warning");
 		return;
 	}
-	WORLD.Update();
+	while (!WORLD.isFinished())
+	{
+		WORLD.CheckGameState();
+	}
 }

@@ -22,12 +22,12 @@ public:
 		return vector2<T>(widthX - rhs.widthX, heightY - rhs.heightY);
 	}
 	//* operator, returns the result of multiplying the rhs to this
-	vector2<T> operator * (const float rhs) const
+	vector2<T> operator * (const T rhs) const
 	{
 		return vector2<T>(widthX * rhs, heightY * rhs);
 	}
 	//
-	vector2<T> operator / (const float rhs) const
+	vector2<T> operator / (const T rhs) const
 	{
 		return vector2<T>(widthX / rhs, heightY / rhs);
 	}

@@ -1,5 +1,6 @@
 #include "Background.h"
 #include "Visualisation.h"
+#include "World.h"
 
 Background::Background(const std::string& name) : Entity(name) 
 {
@@ -9,51 +10,66 @@ Background::Background(const std::string& name) : Entity(name)
 
 void Background::Update(const float s)
 {
-	VIZ.DrawSprite(gfxName, position,0, frame);
-	VIZ.DrawSprite(gfxName, extraBgPos,0, frame);//extra
+	Render(s);
+	vector2<int> interExtraPos{ extraBgOldPos + (extraBgPos - extraBgOldPos) * s };
+	VIZ.DrawSprite(gfxName, interExtraPos, 0, frame);//extra
 }
 
 void Background::InputHandling()
 {
 	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
 	const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
-	if (keyboardData.scanCode['A'])
+
+	vector2<int> tempPos{ GetPosition() };
+	vector2<int> tempExtraPos{ extraBgPos };
+
+	if (WORLD.isBgMoving())
 	{
-		direction = EDirection::ERight;
-		extraBgPos.widthX+=speed;
-		if (position.widthX == frame.Width()) { position.widthX = 0; }
-		if (position.widthX >= 0)
-			extraBgPos = { position.widthX - VIZ.GetScreenWidth() , position.heightY };
-	}
-	else if (keyboardData.scanCode['D'])
-	{
-		direction = EDirection::ELeft;
-		extraBgPos.widthX-=speed;
-		if (position.widthX == -frame.Width()) { position.widthX = 0; }
-		if (position.widthX <= 0)
-			extraBgPos = { position.widthX + VIZ.GetScreenWidth(), position.heightY };
+		if (keyboardData.scanCode['A'])
+		{
+			direction = EDirection::ERight;
+			tempExtraPos.widthX += speed;
+			if (tempPos.widthX == frame.Width()) { tempPos.widthX = 0; }
+			if (tempPos.widthX > 0)
+				tempExtraPos = { tempPos.widthX - VIZ.GetScreenWidth() , tempPos.heightY };
+		}
+		if (keyboardData.scanCode['D'])
+		{
+			direction = EDirection::ELeft;
+			tempExtraPos.widthX -= speed;
+			if (tempPos.widthX == -frame.Width()) { tempPos.widthX = 0; }
+			if (tempPos.widthX < 0)
+				tempExtraPos = { tempPos.widthX + VIZ.GetScreenWidth(), tempPos.heightY };
+		}
+		else
+		{
+			direction = EDirection::EStill;
+		}
+		if (controllerData.isAttached)
+		{
+			if (controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] < -HK_GAMEPAD_LEFT_THUMB_DEADZONE)
+			{
+				direction = EDirection::ERight;
+				tempExtraPos.widthX++;
+				if (tempPos.widthX == frame.Width()) { tempPos.widthX = 0; }
+				if (tempPos.widthX > 0)
+					tempExtraPos = { tempPos.widthX - frame.Width(), tempPos.heightY }; //left
+			}
+			if (controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] > HK_GAMEPAD_LEFT_THUMB_DEADZONE)
+			{
+				direction = EDirection::ELeft;
+				tempExtraPos.widthX--;
+				if (tempPos.widthX == -frame.Width()) { tempPos.widthX = 0; }
+				if (tempPos.widthX < 0)
+					tempExtraPos = { tempPos.widthX + frame.Width(), tempPos.heightY }; //right
+			}
+		}
+		SetPosition(tempPos);
+		SetExtraBgPos(tempExtraPos);
 	}
 	else
 	{
 		direction = EDirection::EStill;
-	}
-	if (controllerData.isAttached)
-	{
-		if (controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] < -15000)
-		{
-			direction = EDirection::ERight;
-			extraBgPos.widthX++;
-			if (position.widthX == frame.Width()) { position.widthX = 0; }
-			if (position.widthX >= 0)
-				extraBgPos = { position.widthX - frame.Width(), position.heightY }; //left
-		}
-		if (controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] > 15000)
-		{
-			direction = EDirection::ELeft;
-			extraBgPos.widthX--;
-			if (position.widthX == -frame.Width()) { position.widthX = 0; }
-			if(position.widthX < 0)
-				extraBgPos = { position.widthX + frame.Width(), position.heightY }; //right
-		}
-	}
+		SetExtraBgPos(tempExtraPos);
+	}	
 }

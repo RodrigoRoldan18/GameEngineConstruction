@@ -6,33 +6,32 @@ Bullet::Bullet(const std::string& name) : Entity(name)
 	frame = Rectangle(0, 32, 0, 32);
 	isAlive = false;
 	health = 1; 
-	speed = 10;
+	speed = 20;
 }
 
 void Bullet::Update(const float s)
 {
-	if (position.widthX < -frame.Width() || position.heightY < -frame.Width() || position.widthX > VIZ.GetScreenWidth() + frame.Width() || position.heightY > VIZ.GetScreenHeight() + frame.Height())
-	{
-		isAlive = false;
-		return;
-	}
-	VIZ.DrawSprite(gfxName, position, currentAnimFrame, frame);
+	Render(s);
 }
 
 void Bullet::InputHandling()
 {
 	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
 	const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
+
+	vector2<int> tempPos{ GetPosition() };
+
 	if (keyboardData.scanCode['A'])
-		position.widthX++;
+		tempPos.widthX++;
 	else if (keyboardData.scanCode['D'])
-		position.widthX--;
+		tempPos.widthX--;
 	if (controllerData.isAttached)
 	{
 		if (controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] < -HK_GAMEPAD_LEFT_THUMB_DEADZONE)
-			position.widthX++;
+			tempPos.widthX++;
 
 		else if (controllerData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] > HK_GAMEPAD_LEFT_THUMB_DEADZONE)
-			position.widthX--;
+			tempPos.widthX--;
 	}
+	SetPosition(tempPos);
 }

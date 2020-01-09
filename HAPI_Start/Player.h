@@ -5,8 +5,8 @@ class Player : public Entity
 {
 private:
 	int firingCooldown{ 0 };
-	int score{ 0 };
 	EDirection previousDir{ EDirection::EStill };
+	int smoothJump{ 0 };
 
 public:
 	Player(const std::string& name);
