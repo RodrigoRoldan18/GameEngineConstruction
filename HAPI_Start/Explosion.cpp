@@ -25,6 +25,8 @@ void Explosion::Update(const float s)
 
 void Explosion::InputHandling()
 {
+	if (!CheckIfAlive())
+		return;
 	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
 	const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
 

@@ -17,6 +17,8 @@ void Background::Update(const float s)
 
 void Background::InputHandling()
 {
+	if (!CheckIfAlive())
+		return;
 	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
 	const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
 

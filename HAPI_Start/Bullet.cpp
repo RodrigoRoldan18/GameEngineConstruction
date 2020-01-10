@@ -16,6 +16,8 @@ void Bullet::Update(const float s)
 
 void Bullet::InputHandling()
 {
+	if (!CheckIfAlive())
+		return;
 	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
 	const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
 

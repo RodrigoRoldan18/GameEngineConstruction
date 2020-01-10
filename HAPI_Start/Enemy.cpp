@@ -5,7 +5,6 @@
 
 Enemy::Enemy(const std::string& name) : Entity(name)
 { 
-	//TODO: have random positions depending on AI type, if tracker, place anywhere on the right of the screen, otherwise place on the right of the screen at the top
 	srand(time(0));
 	if (rand() % 2 == 0)
 		AI = EType::EPatroller;
@@ -15,7 +14,29 @@ Enemy::Enemy(const std::string& name) : Entity(name)
 	role = ERole::EEnemy;
 	frame = Rectangle(0, 64, 0, 64); 
 	direction = EDirection::ERight;
-	SetPosition(vector2<int>(100, 100));
+
+	if (AI == EType::EPatroller)
+		SetPosition(vector2<int>(rand() % (VIZ.GetScreenWidth() - 100) + 50, 100));
+	else
+		SetPosition(vector2<int>(rand() % (VIZ.GetScreenWidth() - 100) + 50, rand() % (VIZ.GetScreenHeight() - 200) + 50));
+
+}
+
+Enemy::Enemy(const std::string& name, const vector2<int> Pos) : Entity(name)
+{
+	//this is for the spare ones
+	srand(time(0));
+	if (rand() % 2 == 0)
+		AI = EType::EPatroller;
+	else
+		AI = EType::ETracker;
+
+	role = ERole::EEnemy;
+	frame = Rectangle(0, 64, 0, 64);
+	direction = EDirection::ERight;
+	isAlive = false;
+
+	SetPosition(Pos);
 }
 
 void Enemy::Update(const float s)
@@ -26,6 +47,7 @@ void Enemy::Update(const float s)
 
 void Enemy::InputHandling()
 {
+	//this is allowed to run even if the enemies are dead to spawn and despawn them
 	vector2<int> tempPos = GetPosition();
 
 	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
@@ -53,11 +75,49 @@ void Enemy::InputHandling()
 			}
 		}
 		SetPosition(tempPos);
+		//if it is completely outside of the screen on the left or completely about to enter on the right, then set to not alive or alive respectively
+		SpawnDespawn();
 	}	
+}
+
+void Enemy::SpawnDespawn()
+{
+	vector2<int> tempPos = GetPosition();
+	if (tempPos.widthX < -frame.Width())// completely outside on the right
+	{
+		//Despawn offscreen
+		isAlive = false;
+		health = 100;
+		if (rand() % 2 == 0)
+			AI = EType::EPatroller;
+		else
+			AI = EType::ETracker;
+		tempPos = vector2<int>(rand() % (VIZ.GetScreenWidth() / 3) + VIZ.GetScreenWidth(), rand() % (VIZ.GetScreenHeight() - 100) + 50);
+		SetPosition(tempPos);
+	}
+	else if (tempPos.widthX > VIZ.GetScreenWidth() && tempPos.widthX < VIZ.GetScreenWidth() + 10)
+	{
+		//Spawn offscreen
+		isAlive = true;
+	}
+	else if (tempPos.widthX > 0 && tempPos.widthX < VIZ.GetScreenWidth() - frame.Width() && !isAlive)
+	{
+		//Despawn onscreen
+		isAlive = false;
+		health = 100;
+		if (rand() % 2 == 0)
+			AI = EType::EPatroller;
+		else
+			AI = EType::ETracker;
+		tempPos = vector2<int>(rand() % (VIZ.GetScreenWidth() / 3) + VIZ.GetScreenWidth(), rand() % (VIZ.GetScreenHeight() - 100) + 50);
+		SetPosition(tempPos);
+	}
 }
 
 void Enemy::MoveTowardsPlayer(const std::vector<Entity*>& entityVector)
 {
+	if (!CheckIfAlive())
+		return;
 	vector2<int> tempThisPos = GetPosition();
 
 	switch (AI)

@@ -60,6 +60,7 @@ public:
 	void SetPosition(const vector2<int>& argCasterPosition) { oldPos = position; position = argCasterPosition; }
 	void SetDirection(const EDirection& argCasterDirection) { direction = argCasterDirection; }
 	void SetRole(const ERole& argCasterRole) { role = argCasterRole; }
+	void SetHealth(const int argHealth) { health = argHealth; }
 
 	Rectangle GetFrame() const { return frame; }
 	int GetDamage() const { return damage; }

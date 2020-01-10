@@ -72,6 +72,8 @@ void Entity::TakeDamage(const int& argDamage)
 void Entity::Movement()
 {
 	InputHandling();
+	if (!CheckIfAlive())
+		return;
 	vector2<int>pos{ GetPosition() };
 	switch (direction)
 	{

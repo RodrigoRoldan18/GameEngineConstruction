@@ -8,7 +8,7 @@ Player::Player(const std::string& name) : Entity(name)
 	role = ERole::EPlayer;
 	frame = Rectangle(0, 64, 0, 64);
 	SetPosition({ 0, 704 });
-	speed = 4;
+	speed = 8;
 }
 
 void Player::Update(const float s)
@@ -21,10 +21,12 @@ void Player::Update(const float s)
 
 void Player::InputHandling()
 {
+	if (!CheckIfAlive())
+		return;
 	EDirection tempDirection = direction;
 	vector2<int> tempPos{ GetPosition() };
 
-	speed = 4;
+	speed = 8;
 	const HAPI_TKeyboardData& keyboardData = HAPI.GetKeyboardData();
 	const HAPI_TControllerData& controllerData = HAPI.GetControllerData(0);
 	if (keyboardData.scanCode['W'] && tempPos.heightY > 0)

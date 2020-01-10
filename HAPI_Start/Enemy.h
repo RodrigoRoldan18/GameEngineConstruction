@@ -14,8 +14,10 @@ private:
 
 public:
 	Enemy(const std::string& name);
+	Enemy(const std::string& name, const vector2<int> Pos);
 	void Update(const float s) override final;
 	void InputHandling() override final;
+	void SpawnDespawn();
 	void MoveTowardsPlayer(const std::vector<Entity*>& entityVector) override final;
 };
 

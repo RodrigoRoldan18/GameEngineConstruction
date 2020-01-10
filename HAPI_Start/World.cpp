@@ -59,13 +59,10 @@ void World::Update()
 		{
 			for (Entity* entity : m_entities)
 			{
-				entity->CheckOffScreen();
-				if (entity->CheckIfAlive())
-				{
-					if (entity->GetRole() == ERole::EEnemy)
-						entity->MoveTowardsPlayer(m_entities);
-					entity->Movement();
-				}			
+				entity->CheckOffScreen();				
+				if (entity->GetRole() == ERole::EEnemy)
+					entity->MoveTowardsPlayer(m_entities);
+				entity->Movement();							
 			}
 			lastTimeTicked = HAPI.GetTime();
 			for (size_t i = 0; i < m_entities.size(); i++)
@@ -127,9 +124,13 @@ bool World::LoadLevel()
 
 void World::LoadPools()
 {
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 2; i++)
 	{
-		m_entities.push_back(new Enemy("Enemy"));	//TODO: add more enemies when position randomisation is done
+		m_entities.push_back(new Enemy("Enemy"));
+	}
+	for (int i = 0; i < 18; i++)
+	{
+		m_entities.push_back(new Enemy("Enemy", vector2<int>(rand() % (VIZ.GetScreenWidth() / 3) + VIZ.GetScreenWidth(), rand() % (VIZ.GetScreenHeight() - 100) + 50)));
 	}
 	for (int i = 0; i < 20; i++)
 	{
@@ -178,7 +179,7 @@ void World::FireBullet(const vector2<int>& argCasterPosition, const EDirection& 
 			bullet->SetRole(argCasterRole);
 			bullet->SetAliveStatus(true);
 			HAPI_TSoundOptions options;
-			options.volume = 0.3f;
+			options.volume = 0.2f;
 			HAPI.PlaySound("Data\\laserSound.wav", options);
 			break;			
 		}
@@ -217,7 +218,7 @@ void World::DisplayMainMenu()
 {
 	const int noOfOptions{ 2 };
 	int optionIndex{ 0 };
-	bool holdingKey{ false };
+	bool holdingKey{ true };
 
 	while (HAPI.Update())
 	{
@@ -264,7 +265,7 @@ void World::DisplayMainMenu()
 				optionIndex = 0;
 			holdingKey = true;
 		}
-		else if (keyboardData.scanCode[HK_SPACE])
+		else if (keyboardData.scanCode[HK_SPACE] && !holdingKey)
 		{
 			if (optionIndex == 0)
 			{
@@ -299,7 +300,7 @@ void World::DisplayMainMenu()
 					optionIndex = 0;
 				holdingKey = true;
 			}
-			else if (controllerData.digitalButtons[HK_DIGITAL_A])
+			else if (controllerData.digitalButtons[HK_DIGITAL_A] && !holdingKey)
 			{
 				if (optionIndex == 0)
 				{
@@ -320,7 +321,7 @@ bool World::DisplayGameOver()
 {
 	bool isPlayingAgain;
 	int optionIndex{ 0 };
-	bool holdingKey{ false };
+	bool holdingKey{ true };
 
 	while (HAPI.Update())
 	{
@@ -370,11 +371,22 @@ bool World::DisplayGameOver()
 				optionIndex = 0;
 			holdingKey = true;
 		}
-		else if (keyboardData.scanCode[HK_SPACE])
+		else if (keyboardData.scanCode[HK_SPACE] && !holdingKey)
 		{
 			if (optionIndex == 0)
 			{
 				m_gameState = EState::EMenu;
+				score = 0;
+				for (Entity* player : m_entities)
+				{
+					if (player->GetName() == "Player")
+					{
+						player->SetAliveStatus(true);
+						player->SetHealth(100);
+						player->SetPosition({ 0, 704 });
+						break;
+					}
+				}
 				break;
 			}
 			else
@@ -404,11 +416,22 @@ bool World::DisplayGameOver()
 					optionIndex = 0;
 				holdingKey = true;
 			}
-			else if (controllerData.digitalButtons[HK_DIGITAL_A])
+			else if (controllerData.digitalButtons[HK_DIGITAL_A] && !holdingKey)
 			{
 				if (optionIndex == 0)
 				{
 					m_gameState = EState::EMenu;
+					score = 0;
+					for (Entity* player : m_entities)
+					{
+						if (player->GetName() == "Player")
+						{
+							player->SetAliveStatus(true);
+							player->SetHealth(100);
+							player->SetPosition({ 0, 704 });
+							break;
+						}
+					}
 					break;
 				}
 				else
